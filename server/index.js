@@ -388,3 +388,17 @@ app.listen(PORT, "0.0.0.0", () => {
     `📁 Models stored in: ${modelsDir}`
   );
 });
+
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(
+      `ARTifact server running on http://localhost:${PORT}`
+    );
+
+    console.log(
+      `📁 Models stored in: ${modelsDir}`
+    );
+  });
+}
+
+module.exports = app;
