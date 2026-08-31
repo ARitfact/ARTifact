@@ -24,7 +24,10 @@ app.use(express.json());
 // Local model storage
 // --------------------------------
 
-const modelsDir = path.join(__dirname, "models");
+const modelsDir =
+  process.env.NODE_ENV === "production"
+    ? path.join("/tmp", "artifact-models")
+    : path.join(__dirname, "models");
 
 if (!fs.existsSync(modelsDir)) {
   fs.mkdirSync(modelsDir, { recursive: true });
