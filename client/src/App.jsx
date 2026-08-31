@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import ModelViewer from "./components/ModelViewer";
 import ARViewer from "./components/ARViewer";
 
-const API_URL = `http://${window.location.hostname}:5000`;
+const API_URL = "https://ar-tifact-e3yz.vercel.app";
 
 function App() {
   const fileInputRef = useRef(null);
