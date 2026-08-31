@@ -221,158 +221,183 @@ app.post(
 // Check 3D generation status
 // --------------------------------
 
-app.get(
-  "/api/task/:taskId",
-  async (req, res) => {
-    try {
-      const { taskId } = req.params;
+// --------------------------------
+// Check 3D generation status
+// --------------------------------
 
-      console.log(
-        "\n🔍 Checking task:",
-        taskId
-      );
+app.get("/api/task/:taskId", async (req, res) => {
+  try {
+    const { taskId } = req.params;
 
-      const response = await axios.get(
-        `https://api.tripo3d.ai/v2/openapi/task/${taskId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.TRIPO_API_KEY}`,
-          },
-        }
-      );
+    console.log("\n🔍 Checking task:", taskId);
 
-      const task =
-        response.data?.data;
+    const response = await axios.get(
+      `https://api.tripo3d.ai/v2/openapi/task/${taskId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TRIPO_API_KEY}`,
+        },
+      }
+    );
 
-      console.log(
-        "📊 Task status:",
-        task?.status,
-        "Progress:",
-        task?.progress
-      );
+    const task = response.data?.data;
 
-      // --------------------------------
-      // If generation finished
-      // --------------------------------
+    console.log(
+      "📊 Task status:",
+      task?.status,
+      "Progress:",
+      task?.progress
+    );
 
-      if (
-        task?.status === "success"
-      ) {
-        const tripoModelUrl =
-          task?.result?.pbr_model?.url;
+    // --------------------------------
+    // Generation finished
+    // --------------------------------
 
-        if (!tripoModelUrl) {
-          throw new Error(
-            "Tripo did not return the model URL."
-          );
-        }
+    if (task?.status === "success") {
+      const tripoModelUrl =
+        task?.result?.pbr_model?.url;
 
-        // Local filename
-        const fileName =
-          `${taskId}.glb`;
-
-        const localFilePath =
-          path.join(
-            modelsDir,
-            fileName
-          ); 
-
-        // --------------------------------
-        // Download only once
-        // --------------------------------
-
-        if (
-          !fs.existsSync(localFilePath)
-        ) {
-          console.log(
-            "\n📦 Downloading model from Tripo..."
-          );
-
-          const modelResponse =
-            await axios.get(
-              tripoModelUrl,
-              {
-                responseType:
-                  "arraybuffer",
-                maxContentLength:
-                  Infinity,
-                maxBodyLength:
-                  Infinity,
-              }
-            );
-
-          fs.writeFileSync(
-            localFilePath,
-            modelResponse.data
-          );
-
-          console.log(
-            "✅ Model saved locally:",
-            localFilePath
-          );
-
-          console.log(
-            "📦 Size:",
-            modelResponse.data.length,
-            "bytes"
-          );
-        } else {
-          console.log(
-            "✅ Model already stored locally."
-          );
-        }
-
-        // --------------------------------
-        // IMPORTANT
-        // Return OUR URL
-        // --------------------------------
-
-        const localModelUrl =
-  `http://${req.get("host")}/models/${fileName}`;
-
-        return res.json({
-          success: true,
-
-          task: task,
-
-          modelUrl:
-            localModelUrl,
-        });
+      if (!tripoModelUrl) {
+        throw new Error(
+          "Tripo did not return the model URL."
+        );
       }
 
-      // --------------------------------
-      // Still processing
-      // --------------------------------
+      console.log(
+        "✅ Model generated successfully"
+      );
 
-      res.json({
+      return res.json({
         success: true,
-
         task: task,
-
-        modelUrl: null,
+        modelUrl:
+          `${req.protocol}://${req.get("host")}/api/model/${taskId}`,
       });
+    }
 
-    } catch (error) {
-      console.error(
-        "\n❌ Task status error:"
-      );
+    // --------------------------------
+    // Still processing
+    // --------------------------------
 
-      console.error(
-        error.response?.status,
+    return res.json({
+      success: true,
+      task: task,
+      modelUrl: null,
+    });
+
+  } catch (error) {
+    console.error("\n❌ Task status error:");
+
+    console.error(
+      error.response?.status,
+      error.response?.data ||
+        error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+
+      error:
         error.response?.data ||
-          error.message
+        error.message,
+    });
+  }
+});
+
+// --------------------------------
+// Proxy GLB model from Tripo
+// --------------------------------
+
+app.get("/api/model/:taskId", async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    console.log(
+      "\n📦 Fetching model for task:",
+      taskId
+    );
+
+    // Get latest task information from Tripo
+    const response = await axios.get(
+      `https://api.tripo3d.ai/v2/openapi/task/${taskId}`,
+      {
+        headers: {
+          Authorization:
+            `Bearer ${process.env.TRIPO_API_KEY}`,
+        },
+      }
+    );
+
+    const task = response.data?.data;
+
+    const modelUrl =
+      task?.result?.pbr_model?.url;
+
+    if (!modelUrl) {
+      return res.status(404).json({
+        success: false,
+        message: "Model URL not available yet.",
+      });
+    }
+
+    console.log(
+      "⬇️ Downloading model from Tripo..."
+    );
+
+    const modelResponse =
+      await axios.get(
+        modelUrl,
+        {
+          responseType: "stream",
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+        }
       );
 
+    // --------------------------------
+    // Headers
+    // --------------------------------
+
+    res.setHeader(
+      "Content-Type",
+      "model/gltf-binary"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${taskId}.glb"`
+    );
+
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      "*"
+    );
+
+    // --------------------------------
+    // Stream GLB to browser
+    // --------------------------------
+
+    modelResponse.data.pipe(res);
+
+  } catch (error) {
+    console.error(
+      "\n❌ MODEL PROXY ERROR"
+    );
+
+    console.error(
+      error.response?.status,
+      error.response?.data ||
+        error.message
+    );
+
+    if (!res.headersSent) {
       res.status(500).json({
         success: false,
-
-        error:
-          error.response?.data ||
-          error.message,
+        message: "Failed to load 3D model.",
       });
     }
   }
-);
+});
 
 // --------------------------------
 // Start server
@@ -392,6 +417,14 @@ app.listen(PORT, "0.0.0.0", () => {
   );
 });
 
+// --------------------------------
+// Start server
+// --------------------------------
+
+// --------------------------------
+// Start server locally
+// --------------------------------
+
 if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, "0.0.0.0", () => {
     console.log(
@@ -399,9 +432,13 @@ if (process.env.NODE_ENV !== "production") {
     );
 
     console.log(
-      `📁 Models stored in: ${modelsDir}`
+      `📱 LAN server: http://10.142.40.198:${PORT}`
     );
   });
 }
+
+// --------------------------------
+// Vercel
+// --------------------------------
 
 module.exports = app;
