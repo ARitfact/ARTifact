@@ -14,8 +14,11 @@ const {
 const {
   createAccessToken,
   createRefreshToken,
+  extractSessionId,
+  validateRefreshToken,
   getSessionExpiry,
   getRefreshCookieOptions,
+  getClearCookieOptions,
 } = require("../services/tokenService");
 
 const {
@@ -672,9 +675,415 @@ const login = async (req, res) => {
     },
   });
 };
+
+
+// =====================================
+// REFRESH ACCESS TOKEN
+// =====================================
+
+const refreshAccessToken = async (
+  req,
+  res
+) => {
+  const refreshToken =
+    req.cookies
+      ?.artifact_refresh_token;
+
+  const clearRefreshCookie =
+    () => {
+      res.clearCookie(
+        "artifact_refresh_token",
+        getClearCookieOptions()
+      );
+    };
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      success: false,
+      code:
+        "REFRESH_TOKEN_REQUIRED",
+
+      message:
+        "Refresh token is required",
+    });
+  }
+
+  const sessionId =
+    extractSessionId(
+      refreshToken
+    );
+
+  if (
+    !sessionId ||
+    !mongoose.Types.ObjectId.isValid(
+      sessionId
+    )
+  ) {
+    clearRefreshCookie();
+
+    return res.status(401).json({
+      success: false,
+      code:
+        "REFRESH_TOKEN_INVALID",
+
+      message:
+        "Refresh token is invalid",
+    });
+  }
+
+  const session =
+    await Session.findById(
+      sessionId
+    ).select(
+      "+refreshTokenHash"
+    );
+
+  if (!session) {
+    clearRefreshCookie();
+
+    return res.status(401).json({
+      success: false,
+      code:
+        "SESSION_NOT_FOUND",
+
+      message:
+        "Session was not found",
+    });
+  }
+
+  const tokenMatches =
+    validateRefreshToken(
+      refreshToken,
+      session.refreshTokenHash
+    );
+
+  if (!tokenMatches) {
+    await Session.revokeAllForUser(
+      session.userId,
+      "token_reuse"
+    );
+
+    clearRefreshCookie();
+
+    return res.status(401).json({
+      success: false,
+      code:
+        "REFRESH_TOKEN_REUSE_DETECTED",
+
+      message:
+        "Suspicious session activity detected. Please log in again.",
+    });
+  }
+
+  if (
+    session.revokedAt ||
+    session.expiresAt.getTime() <=
+      Date.now()
+  ) {
+    if (!session.revokedAt) {
+      await session.revoke(
+        "expired"
+      );
+    }
+
+    clearRefreshCookie();
+
+    return res.status(401).json({
+      success: false,
+      code:
+        "SESSION_EXPIRED",
+
+      message:
+        "Session has expired. Please log in again.",
+    });
+  }
+
+  const user =
+    await User.findById(
+      session.userId
+    ).select(
+      "+passwordVersion"
+    );
+
+  if (
+    !user ||
+    !user.emailVerified ||
+    user.accountStatus !==
+      "active"
+  ) {
+    await session.revoke(
+      user?.accountStatus ===
+        "suspended"
+        ? "account_suspended"
+        : "admin_revoked"
+    );
+
+    clearRefreshCookie();
+
+    return res.status(403).json({
+      success: false,
+      code:
+        "ACCOUNT_UNAVAILABLE",
+
+      message:
+        "This account is currently unavailable",
+    });
+  }
+
+  const {
+    refreshToken:
+      newRefreshToken,
+
+    refreshTokenHash:
+      newRefreshTokenHash,
+  } = createRefreshToken(
+    session._id.toString()
+  );
+
+  const newExpiry =
+    getSessionExpiry(
+      session.rememberMe
+    );
+
+  await session.rotateToken(
+    newRefreshTokenHash,
+    newExpiry
+  );
+
+  const accessToken =
+    createAccessToken({
+      user,
+      sessionId:
+        session._id,
+    });
+
+  res.cookie(
+    "artifact_refresh_token",
+    newRefreshToken,
+    getRefreshCookieOptions(
+      session.rememberMe
+    )
+  );
+
+  return res.status(200).json({
+    success: true,
+
+    code:
+      "TOKEN_REFRESHED",
+
+    message:
+      "Access token refreshed successfully",
+
+    data: {
+      accessToken,
+
+      accessTokenExpiresIn:
+        process.env
+          .JWT_ACCESS_EXPIRES_IN ||
+        "15m",
+
+      session: {
+        id: session._id,
+
+        expiresAt:
+          newExpiry,
+      },
+    },
+  });
+};
+
+// =====================================
+// LOGOUT CURRENT DEVICE
+// =====================================
+
+const logout = async (
+  req,
+  res
+) => {
+  const refreshToken =
+    req.cookies
+      ?.artifact_refresh_token;
+
+  if (refreshToken) {
+    const sessionId =
+      extractSessionId(
+        refreshToken
+      );
+
+    if (
+      sessionId &&
+      mongoose.Types.ObjectId.isValid(
+        sessionId
+      )
+    ) {
+      const session =
+        await Session.findById(
+          sessionId
+        ).select(
+          "+refreshTokenHash"
+        );
+
+      if (session) {
+        const tokenMatches =
+          validateRefreshToken(
+            refreshToken,
+            session.refreshTokenHash
+          );
+
+        if (
+          tokenMatches &&
+          !session.revokedAt
+        ) {
+          await session.revoke(
+            "logout"
+          );
+        }
+      }
+    }
+  }
+
+  res.clearCookie(
+    "artifact_refresh_token",
+    getClearCookieOptions()
+  );
+
+  return res.status(200).json({
+    success: true,
+    code:
+      "LOGOUT_SUCCESSFUL",
+
+    message:
+      "Logged out successfully",
+  });
+};
+
+// =====================================
+// LOGOUT ALL DEVICES
+// =====================================
+
+const logoutAll = async (
+  req,
+  res
+) => {
+  await Session.revokeAllForUser(
+    req.user._id,
+    "logout_all"
+  );
+
+  res.clearCookie(
+    "artifact_refresh_token",
+    getClearCookieOptions()
+  );
+
+  return res.status(200).json({
+    success: true,
+
+    code:
+      "ALL_SESSIONS_REVOKED",
+
+    message:
+      "Logged out from all devices successfully",
+  });
+};
+
+// =====================================
+// CURRENT USER
+// =====================================
+
+const getCurrentUser = async (
+  req,
+  res
+) => {
+  return res.status(200).json({
+    success: true,
+
+    data: {
+      user: {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+
+        emailVerified:
+          req.user
+            .emailVerified,
+
+        profileImage:
+          req.user
+            .profileImage,
+
+        role:
+          req.user.role,
+
+        currentPlan:
+          req.user
+            .currentPlan,
+
+        availableCredits:
+          req.user
+            .availableCredits,
+
+        reservedCredits:
+          req.user
+            .reservedCredits,
+
+        storageUsedBytes:
+          req.user
+            .storageUsedBytes,
+
+        preferences:
+          req.user
+            .preferences,
+
+        createdAt:
+          req.user
+            .createdAt,
+      },
+
+      session: {
+        id:
+          req.session._id,
+
+        deviceId:
+          req.session
+            .deviceId,
+
+        deviceName:
+          req.session
+            .deviceName,
+
+        browser:
+          req.session.browser,
+
+        operatingSystem:
+          req.session
+            .operatingSystem,
+
+        rememberMe:
+          req.session
+            .rememberMe,
+
+        lastUsedAt:
+          req.session
+            .lastUsedAt,
+
+        expiresAt:
+          req.session
+            .expiresAt,
+      },
+    },
+  });
+
+  
+};
+
+
 module.exports = {
   register,
   verifyEmail,
   resendEmailOTP,
   login,
+  refreshAccessToken,
+  logout,
+  logoutAll,
+  getCurrentUser,
 };
