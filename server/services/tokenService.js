@@ -22,11 +22,25 @@ const getAccessSecret = () => {
 const getRefreshTokenDays = (
   rememberMe = false
 ) => {
-  const value = rememberMe
-    ? process.env.REMEMBER_ME_DAYS || 90
-    : process.env.REFRESH_TOKEN_DAYS || 30;
+  const rawValue = rememberMe
+    ? process.env
+        .REMEMBER_ME_DAYS || 90
+    : process.env
+        .REFRESH_TOKEN_DAYS || 30;
 
-  return Number(value);
+  const days = Number(rawValue);
+
+  if (
+    !Number.isFinite(days) ||
+    days <= 0 ||
+    days > 365
+  ) {
+    throw new Error(
+      "Refresh-token duration is invalid"
+    );
+  }
+
+  return days;
 };
 
 const createAccessToken = ({
@@ -169,10 +183,11 @@ const getRefreshCookieOptions = (
     path: "/api/v1/auth",
 
     expires: expiresAt,
-
+    
     maxAge:
       expiresAt.getTime() -
       Date.now(),
+      priority: "high",
   };
 };
 
@@ -186,12 +201,13 @@ const getClearCookieOptions =
       httpOnly: true,
 
       secure: isProduction,
-
+     
       sameSite: isProduction
         ? "none"
         : "lax",
 
       path: "/api/v1/auth",
+      priority: "high",
     };
   };
 
