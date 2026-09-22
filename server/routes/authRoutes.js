@@ -4,6 +4,7 @@ const {
   register,
   verifyEmail,
   resendEmailOTP,
+  login,
 } = require(
   "../controllers/authController"
 );
@@ -20,6 +21,7 @@ const {
   registerSchema,
   verifyEmailSchema,
   resendEmailOTPSchema,
+  loginSchema,
 } = require(
   "../validators/authValidators"
 );
@@ -27,6 +29,7 @@ const {
 const {
   registerLimiter,
   otpLimiter,
+  loginLimiter,
 } = require(
   "../middleware/rateLimiters"
 );
@@ -63,6 +66,13 @@ router.post(
   ),
 
   asyncHandler(resendEmailOTP)
+);
+
+router.post(
+  "/login",
+  loginLimiter,
+  validate(loginSchema),
+  asyncHandler(login)
 );
 
 module.exports = router;
