@@ -4,6 +4,7 @@ const { UAParser } = require("ua-parser-js");
 const Session = require("../models/Session");
 
 const User = require("../models/User");
+const { OAuth2Client } = require("google-auth-library");
 
 const {
   hashPassword,
@@ -35,6 +36,10 @@ const {
   sendOTPEmail,
 } = require("../services/emailService");
 
+
+const googleClient = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID
+);
 const getClientIP = (req) => {
   const forwardedFor =
     req.headers["x-forwarded-for"];
@@ -1076,12 +1081,733 @@ const getCurrentUser = async (
   
 };
 
+// =====================================
+// GOOGLE AUTHENTICATION
+// =====================================
 
+const googleLogin = async (req, res) => {
+  const {
+    credential,
+    rememberMe = false,
+    deviceId,
+    acceptedTerms = false,
+    acceptedPrivacy = false,
+   } = req.validated.body;
+
+  if (
+    !credential ||
+    typeof credential !== "string"
+  ) {
+    return res.status(400).json({
+      success: false,
+      code: "GOOGLE_CREDENTIAL_REQUIRED",
+      message: "Google credential is required",
+    });
+  }
+
+  let googlePayload;
+
+  try {
+    const ticket =
+      await googleClient.verifyIdToken({
+        idToken: credential,
+        audience:
+          process.env.GOOGLE_CLIENT_ID,
+      });
+
+    googlePayload = ticket.getPayload();
+  } catch (error) {
+    console.error(
+      "Google token verification failed:",
+      error.message
+    );
+
+    return res.status(401).json({
+      success: false,
+      code: "GOOGLE_TOKEN_INVALID",
+      message:
+        "Google authentication failed",
+    });
+  }
+
+  const {
+    sub: googleId,
+    email,
+    email_verified: emailVerified,
+    name,
+    picture,
+  } = googlePayload;
+
+  if (
+    !googleId ||
+    !email ||
+    emailVerified !== true
+  ) {
+    return res.status(401).json({
+      success: false,
+      code: "GOOGLE_ACCOUNT_INVALID",
+      message:
+        "Google account does not have a verified email",
+    });
+  }
+
+  const normalizedEmail = email
+    .trim()
+    .toLowerCase();
+
+  let user = await User.findOne({
+    $or: [
+      { googleId },
+      { email: normalizedEmail },
+    ],
+  }).select(
+    "+googleId +passwordVersion"
+  );
+
+  let isNewUser = false;
+
+  if (!user) {
+    if (
+      acceptedTerms !== true ||
+      acceptedPrivacy !== true
+    ) {
+      return res.status(400).json({
+        success: false,
+        code: "LEGAL_CONSENT_REQUIRED",
+        message:
+          "Terms and privacy policy must be accepted",
+      });
+    }
+
+    try {
+      user = await User.create({
+        name:
+          name?.trim() ||
+          normalizedEmail.split("@")[0],
+
+        email: normalizedEmail,
+
+        profileImage:
+          picture || null,
+
+        passwordHash: null,
+
+        authProviders: ["google"],
+
+        googleId,
+
+        emailVerified: true,
+
+        emailVerifiedAt: new Date(),
+
+        accountStatus: "active",
+
+        acceptedTermsAt: new Date(),
+
+        acceptedPrivacyAt: new Date(),
+
+        lastLoginAt: new Date(),
+      });
+
+      isNewUser = true;
+    } catch (error) {
+      if (error.code !== 11000) {
+        throw error;
+      }
+
+      user = await User.findOne({
+        $or: [
+          { googleId },
+          { email: normalizedEmail },
+        ],
+      }).select(
+        "+googleId +passwordVersion"
+      );
+
+      if (!user) {
+        throw error;
+      }
+    }
+  }
+
+  if (
+    user.accountStatus === "suspended"
+  ) {
+    return res.status(403).json({
+      success: false,
+      code: "ACCOUNT_SUSPENDED",
+      message:
+        "This account has been suspended",
+    });
+  }
+
+  if (
+    user.accountStatus === "deleted"
+  ) {
+    return res.status(403).json({
+      success: false,
+      code: "ACCOUNT_UNAVAILABLE",
+      message:
+        "This account is unavailable",
+    });
+  }
+
+  /*
+   * Safely link Google to an existing account.
+   * Google has already verified ownership
+   * of the supplied email address.
+   */
+  let userChanged = false;
+
+  if (
+    user.googleId &&
+    user.googleId !== googleId
+  ) {
+    return res.status(409).json({
+      success: false,
+      code: "GOOGLE_ACCOUNT_CONFLICT",
+      message:
+        "This email is linked to another Google account",
+    });
+  }
+
+ 
+
+  if (!user.googleId) {
+    user.googleId = googleId;
+    userChanged = true;
+  }
+
+  if (
+    !user.authProviders.includes(
+      "google"
+    )
+  ) {
+    user.authProviders.push("google");
+    userChanged = true;
+  }
+
+  if (!user.emailVerified) {
+    user.emailVerified = true;
+    user.emailVerifiedAt = new Date();
+    userChanged = true;
+  }
+
+  if (
+    user.accountStatus ===
+    "pending_verification"
+  ) {
+    user.accountStatus = "active";
+    userChanged = true;
+  }
+
+  if (
+    !user.profileImage &&
+    picture
+  ) {
+    user.profileImage = picture;
+    userChanged = true;
+  }
+
+  user.lastLoginAt = new Date();
+  user.failedLoginAttempts = 0;
+  user.lockUntil = null;
+  userChanged = true;
+
+  if (userChanged) {
+    await user.save({
+      validateBeforeSave: false,
+    });
+  }
+
+  const userAgent =
+    req.get("user-agent") || "";
+
+  const parser =
+    new UAParser(userAgent);
+
+  const browser =
+    parser.getBrowser();
+
+  const operatingSystem =
+    parser.getOS();
+
+  const device =
+    parser.getDevice();
+
+  const sessionId =
+    new mongoose.Types.ObjectId();
+
+  const {
+    refreshToken,
+    refreshTokenHash,
+  } = createRefreshToken(
+    sessionId.toString()
+  );
+
+  const sessionExpiry =
+    getSessionExpiry(rememberMe);
+
+  const finalDeviceId =
+    deviceId || generateDeviceId();
+
+  const deviceName =
+    [
+      device.vendor,
+      device.model,
+    ]
+      .filter(Boolean)
+      .join(" ") ||
+    device.type ||
+    "Unknown device";
+
+  const browserName =
+    [
+      browser.name,
+      browser.version,
+    ]
+      .filter(Boolean)
+      .join(" ") ||
+    "Unknown";
+
+  const operatingSystemName =
+    [
+      operatingSystem.name,
+      operatingSystem.version,
+    ]
+      .filter(Boolean)
+      .join(" ") ||
+    "Unknown";
+
+  await Session.create({
+    _id: sessionId,
+
+    userId: user._id,
+
+    refreshTokenHash,
+
+    tokenFamily:
+      generateTokenFamily(),
+
+    rotationCounter: 0,
+
+    deviceId: finalDeviceId,
+
+    deviceName,
+
+    browser: browserName,
+
+    operatingSystem:
+      operatingSystemName,
+
+    userAgent,
+
+    ipAddress: getClientIP(req),
+
+    rememberMe,
+
+    lastUsedAt: new Date(),
+
+    expiresAt: sessionExpiry,
+  });
+
+  const accessToken =
+    createAccessToken({
+      user,
+      sessionId,
+    });
+
+  res.cookie(
+    "artifact_refresh_token",
+    refreshToken,
+    getRefreshCookieOptions(
+      rememberMe
+    )
+  );
+
+  return res
+    .status(isNewUser ? 201 : 200)
+    .json({
+      success: true,
+
+      code: isNewUser
+        ? "GOOGLE_REGISTRATION_SUCCESSFUL"
+        : "GOOGLE_LOGIN_SUCCESSFUL",
+
+      message: isNewUser
+        ? "Account created successfully with Google"
+        : "Google login successful",
+
+      data: {
+        accessToken,
+
+        accessTokenExpiresIn:
+          process.env
+            .JWT_ACCESS_EXPIRES_IN ||
+          "15m",
+
+        isNewUser,
+
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          profileImage:
+            user.profileImage,
+          role: user.role,
+          currentPlan:
+            user.currentPlan,
+          availableCredits:
+            user.availableCredits,
+          authProviders:
+            user.authProviders,
+        },
+
+        session: {
+          id: sessionId,
+          deviceId:
+            finalDeviceId,
+          deviceName,
+          browser: browserName,
+          operatingSystem:
+            operatingSystemName,
+          rememberMe,
+          expiresAt:
+            sessionExpiry,
+        },
+      },
+    });
+};
+
+
+// =====================================
+// FORGOT PASSWORD
+// =====================================
+
+const forgotPassword = async (req, res) => {
+  const { email } = req.validated.body;
+
+  const normalizedEmail = email
+    .trim()
+    .toLowerCase();
+
+  const genericResponse = {
+    success: true,
+    code: "PASSWORD_RESET_REQUESTED",
+    message:
+      "If an account exists with this email, a password reset code will be sent.",
+  };
+
+  const user = await User.findOne({
+    email: normalizedEmail,
+  });
+
+  if (
+    !user ||
+    user.accountStatus === "deleted" ||
+    user.accountStatus === "suspended"
+  ) {
+    return res
+      .status(200)
+      .json(genericResponse);
+  }
+
+  const resendStatus =
+    await canResendOTP({
+      email: normalizedEmail,
+      purpose: "password_reset",
+    });
+
+  /*
+   * Do not reveal whether an account exists.
+   */
+  if (!resendStatus.allowed) {
+    return res
+      .status(200)
+      .json(genericResponse);
+  }
+
+  try {
+    const otpResult =
+      await createOTP({
+        userId: user._id,
+        email: normalizedEmail,
+        purpose: "password_reset",
+        ipAddress:
+          getClientIP(req),
+        userAgent:
+          req.get("user-agent") ||
+          null,
+      });
+
+    await sendOTPEmail({
+      email: normalizedEmail,
+      name: user.name,
+      otp: otpResult.otp,
+      purpose: "password_reset",
+    });
+  } catch (error) {
+    console.error(
+      "Password reset email failed:",
+      error.message
+    );
+  }
+
+  return res
+    .status(200)
+    .json(genericResponse);
+};
+
+// =====================================
+// RESET PASSWORD USING OTP
+// =====================================
+
+const resetPassword = async (
+  req,
+  res
+) => {
+  const {
+    email,
+    otp,
+    newPassword,
+  } = req.validated.body;
+
+  const normalizedEmail = email
+    .trim()
+    .toLowerCase();
+
+  const user =
+    await User.findOne({
+      email: normalizedEmail,
+    }).select(
+      "+passwordHash +passwordVersion"
+    );
+
+  /*
+   * Same response prevents account discovery.
+   */
+  if (
+    !user ||
+    user.accountStatus === "deleted" ||
+    user.accountStatus === "suspended"
+  ) {
+    return res.status(400).json({
+      success: false,
+      code: "OTP_INVALID_OR_EXPIRED",
+      message:
+        "The OTP is invalid or has expired",
+    });
+  }
+
+  const verification =
+    await verifyOTP({
+      email: normalizedEmail,
+      purpose: "password_reset",
+      otp,
+    });
+
+  if (!verification.success) {
+    return res.status(400).json({
+      success: false,
+      code: verification.code,
+      message:
+        verification.message,
+
+      ...(verification
+        .attemptsRemaining !==
+      undefined
+        ? {
+            attemptsRemaining:
+              verification
+                .attemptsRemaining,
+          }
+        : {}),
+    });
+  }
+
+  if (user.passwordHash) {
+    const samePassword =
+      await verifyPassword(
+        newPassword,
+        user.passwordHash
+      );
+
+    if (samePassword) {
+      return res.status(400).json({
+        success: false,
+        code:
+          "PASSWORD_REUSE_NOT_ALLOWED",
+        message:
+          "New password must be different from your current password",
+      });
+    }
+  }
+
+  user.passwordHash =
+    await hashPassword(
+      newPassword
+    );
+
+  user.passwordChangedAt =
+    new Date();
+
+  user.passwordVersion =
+    (user.passwordVersion || 0) + 1;
+
+  user.failedLoginAttempts = 0;
+  user.lockUntil = null;
+
+  if (
+    !user.authProviders.includes(
+      "local"
+    )
+  ) {
+    user.authProviders.push(
+      "local"
+    );
+  }
+
+  await user.save({
+    validateBeforeSave: false,
+  });
+
+  await Session.revokeAllForUser(
+    user._id,
+    "password_reset"
+  );
+
+  res.clearCookie(
+    "artifact_refresh_token",
+    getClearCookieOptions()
+  );
+
+  return res.status(200).json({
+    success: true,
+    code: "PASSWORD_RESET_SUCCESSFUL",
+    message:
+      "Password reset successfully. Please log in again.",
+  });
+};
+
+// =====================================
+// CHANGE PASSWORD
+// =====================================
+
+const changePassword = async (
+  req,
+  res
+) => {
+  const {
+    currentPassword,
+    newPassword,
+  } = req.validated.body;
+
+  const user =
+    await User.findById(
+      req.user._id
+    ).select(
+      "+passwordHash +passwordVersion"
+    );
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      code: "USER_NOT_FOUND",
+      message: "User was not found",
+    });
+  }
+
+  if (!user.passwordHash) {
+    return res.status(400).json({
+      success: false,
+      code:
+        "LOCAL_PASSWORD_NOT_CONFIGURED",
+      message:
+        "This account does not have a password. Use forgot password to create one.",
+    });
+  }
+
+  const currentPasswordCorrect =
+    await verifyPassword(
+      currentPassword,
+      user.passwordHash
+    );
+
+  if (!currentPasswordCorrect) {
+    return res.status(401).json({
+      success: false,
+      code:
+        "CURRENT_PASSWORD_INCORRECT",
+      message:
+        "Current password is incorrect",
+    });
+  }
+
+  const samePassword =
+    await verifyPassword(
+      newPassword,
+      user.passwordHash
+    );
+
+  if (samePassword) {
+    return res.status(400).json({
+      success: false,
+      code:
+        "PASSWORD_REUSE_NOT_ALLOWED",
+      message:
+        "New password must be different from your current password",
+    });
+  }
+
+  user.passwordHash =
+    await hashPassword(
+      newPassword
+    );
+
+  user.passwordChangedAt =
+    new Date();
+
+  user.passwordVersion =
+    (user.passwordVersion || 0) + 1;
+
+  user.failedLoginAttempts = 0;
+  user.lockUntil = null;
+
+  await user.save({
+    validateBeforeSave: false,
+  });
+
+  /*
+   * Password change invalidates every
+   * active device, including this one.
+   */
+  await Session.revokeAllForUser(
+    user._id,
+    "password_change"
+  );
+
+  res.clearCookie(
+    "artifact_refresh_token",
+    getClearCookieOptions()
+  );
+
+  return res.status(200).json({
+    success: true,
+    code:
+      "PASSWORD_CHANGED_SUCCESSFULLY",
+    message:
+      "Password changed successfully. Please log in again.",
+  });
+};
 module.exports = {
   register,
   verifyEmail,
   resendEmailOTP,
   login,
+  googleLogin,
+  forgotPassword,
+  resetPassword,
+  changePassword,
   refreshAccessToken,
   logout,
   logoutAll,
