@@ -35,4 +35,4 @@ Thumbs.db
 *.tmp
 *.temp
 # Generated 3D models
-server/models/
+server/models/!.env.example
