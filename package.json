@@ -27,6 +27,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.10.1",
     "multer": "^2.3.0",
+    "razorpay": "^2.9.8",
     "ua-parser-js": "^2.0.10",
     "zod": "^4.6.5"
   }
