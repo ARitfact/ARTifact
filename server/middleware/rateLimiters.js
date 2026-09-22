@@ -34,7 +34,26 @@ const otpLimiter = rateLimit({
   },
 });
 
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+
+  limit: 20,
+
+  standardHeaders: "draft-8",
+
+  legacyHeaders: false,
+
+  message: {
+    success: false,
+    code: "TOO_MANY_LOGIN_ATTEMPTS",
+
+    message:
+      "Too many login attempts. Please try again later.",
+  },
+});
+
 module.exports = {
   registerLimiter,
   otpLimiter,
+  loginLimiter,
 };
