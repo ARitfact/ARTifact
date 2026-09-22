@@ -5,6 +5,10 @@ const {
   verifyEmail,
   resendEmailOTP,
   login,
+  googleLogin,
+  forgotPassword,
+  resetPassword,
+  changePassword,
   refreshAccessToken,
   logout,
   logoutAll,
@@ -26,9 +30,11 @@ const {
   verifyEmailSchema,
   resendEmailOTPSchema,
   loginSchema,
-} = require(
-  "../validators/authValidators"
-);
+  googleLoginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  changePasswordSchema,
+} = require("../validators/authValidators");
 
 const {
   registerLimiter,
@@ -80,6 +86,13 @@ router.post(
 );
 
 router.post(
+  "/google",
+  loginLimiter,
+  validate(googleLoginSchema),
+  asyncHandler(googleLogin)
+);
+
+router.post(
   "/refresh",
   asyncHandler(
     refreshAccessToken
@@ -101,6 +114,28 @@ router.get(
   "/me",
   authenticate,
   asyncHandler(getCurrentUser)
+);
+
+router.post(
+  "/forgot-password",
+  otpLimiter,
+  validate(forgotPasswordSchema),
+  asyncHandler(forgotPassword)
+);
+
+router.post(
+  "/reset-password",
+  otpLimiter,
+  validate(resetPasswordSchema),
+  asyncHandler(resetPassword)
+);
+
+router.post(
+  "/change-password",
+  loginLimiter,
+  authenticate,
+  validate(changePasswordSchema),
+  asyncHandler(changePassword)
 );
 
 module.exports = router;
