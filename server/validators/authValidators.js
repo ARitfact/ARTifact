@@ -142,10 +142,119 @@ const loginSchema = z.object({
   query: z.object({}),
 });
 
+const googleLoginSchema = z.object({
+  body: z
+    .object({
+      credential: z
+        .string()
+        .trim()
+        .min(
+          100,
+          "Google credential is invalid"
+        )
+        .max(
+          10000,
+          "Google credential is too large"
+        ),
 
+      rememberMe: z
+        .boolean()
+        .optional()
+        .default(false),
+
+      deviceId: z
+        .string()
+        .trim()
+        .min(1)
+        .max(200)
+        .optional(),
+
+      acceptedTerms: z
+        .boolean()
+        .optional()
+        .default(false),
+
+      acceptedPrivacy: z
+        .boolean()
+        .optional()
+        .default(false),
+    })
+    .strict(),
+
+  params: z.object({}),
+
+  query: z.object({}),
+});
+
+const forgotPasswordSchema =
+  z.object({
+    body: z
+      .object({
+        email: emailSchema,
+      })
+      .strict(),
+
+    params: z.object({}),
+    query: z.object({}),
+  });
+
+const resetPasswordSchema =
+  z.object({
+    body: z
+      .object({
+        email: emailSchema,
+
+        otp: otpSchema,
+
+        newPassword:
+          passwordSchema,
+      })
+      .strict(),
+
+    params: z.object({}),
+    query: z.object({}),
+  });
+
+const changePasswordSchema =
+  z.object({
+    body: z
+      .object({
+        currentPassword: z
+          .string()
+          .min(
+            1,
+            "Current password is required"
+          )
+          .max(
+            128,
+            "Current password is too long"
+          ),
+
+        newPassword:
+          passwordSchema,
+      })
+      .strict()
+      .refine(
+        (data) =>
+          data.currentPassword !==
+          data.newPassword,
+        {
+          message:
+            "New password must be different from current password",
+          path: ["newPassword"],
+        }
+      ),
+
+    params: z.object({}),
+    query: z.object({}),
+  });
 module.exports = {
   registerSchema,
   verifyEmailSchema,
   resendEmailOTPSchema,
   loginSchema,
+  googleLoginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  changePasswordSchema,
 };
