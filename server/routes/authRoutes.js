@@ -18,6 +18,9 @@ const {
 const validate = require(
   "../middleware/validate"
 );
+const {
+  protectCookieRequest,
+} = require("../middleware/security");
 
 const authenticate = require("../middleware/authenticate");
 
@@ -40,9 +43,8 @@ const {
   registerLimiter,
   otpLimiter,
   loginLimiter,
-} = require(
-  "../middleware/rateLimiters"
-);
+  refreshLimiter,
+} = require("../middleware/rateLimiters");
 
 const router = express.Router();
 
@@ -94,6 +96,8 @@ router.post(
 
 router.post(
   "/refresh",
+  refreshLimiter,
+  protectCookieRequest,
   asyncHandler(
     refreshAccessToken
   )
@@ -101,6 +105,7 @@ router.post(
 
 router.post(
   "/logout",
+  protectCookieRequest,
   asyncHandler(logout)
 );
 
