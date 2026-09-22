@@ -109,8 +109,43 @@ const resendEmailOTPSchema = z.object({
   query: z.object({}),
 });
 
+
+const loginSchema = z.object({
+  body: z
+    .object({
+      email: emailSchema,
+
+      password: z
+        .string()
+        .min(1, "Password is required")
+        .max(
+          128,
+          "Password cannot exceed 128 characters"
+        ),
+
+      rememberMe: z
+        .boolean()
+        .optional()
+        .default(false),
+
+      deviceId: z
+        .string()
+        .trim()
+        .min(1)
+        .max(200)
+        .optional(),
+    })
+    .strict(),
+
+  params: z.object({}),
+
+  query: z.object({}),
+});
+
+
 module.exports = {
   registerSchema,
   verifyEmailSchema,
   resendEmailOTPSchema,
+  loginSchema,
 };
