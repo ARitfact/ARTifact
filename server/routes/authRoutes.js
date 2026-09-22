@@ -5,13 +5,17 @@ const {
   verifyEmail,
   resendEmailOTP,
   login,
-} = require(
-  "../controllers/authController"
-);
+  refreshAccessToken,
+  logout,
+  logoutAll,
+  getCurrentUser,
+} = require("../controllers/authController");
 
 const validate = require(
   "../middleware/validate"
 );
+
+const authenticate = require("../middleware/authenticate");
 
 const asyncHandler = require(
   "../utils/asyncHandler"
@@ -73,6 +77,30 @@ router.post(
   loginLimiter,
   validate(loginSchema),
   asyncHandler(login)
+);
+
+router.post(
+  "/refresh",
+  asyncHandler(
+    refreshAccessToken
+  )
+);
+
+router.post(
+  "/logout",
+  asyncHandler(logout)
+);
+
+router.post(
+  "/logout-all",
+  authenticate,
+  asyncHandler(logoutAll)
+);
+
+router.get(
+  "/me",
+  authenticate,
+  asyncHandler(getCurrentUser)
 );
 
 module.exports = router;
