@@ -194,17 +194,7 @@ const userSchema = new mongoose.Schema(
     // ARTIFACT ACCOUNT DATA
     // =====================================
 
-    availableCredits: {
-      type: Number,
-      default: 3,
-      min: 0,
-    },
-
-    reservedCredits: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
+    
 
     storageUsedBytes: {
       type: Number,
@@ -212,11 +202,7 @@ const userSchema = new mongoose.Schema(
       min: 0,
     },
 
-    currentPlan: {
-      type: String,
-      enum: ["free", "credit_pack", "premium"],
-      default: "free",
-    },
+  
 
     // =====================================
     // LEGAL CONSENT
