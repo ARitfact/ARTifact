@@ -6,6 +6,7 @@ const multer = require("multer");
 const FormData = require("form-data");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/authRoutes");
+const cookieParser = require("cookie-parser");
 const connectDatabase = require("./config/database");
 
 dotenv.config();
@@ -98,6 +99,8 @@ app.use(
     limit: "1mb",
   })
 );
+
+app.use(cookieParser());
 
 // ========================================
 // HOME ROUTE
