@@ -1783,7 +1783,7 @@ const changePassword = async (
    */
   await Session.revokeAllForUser(
     user._id,
-    "password_change"
+    "password_changed"
   );
 
   res.clearCookie(
