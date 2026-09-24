@@ -578,3 +578,410 @@
     gap: 6px;
   }
 }
+
+
+/* ARTifact warm editorial palette — matches LandingPage.css */
+.artifact-dashboard {
+  --db-bg: #f5f3ec;
+  --db-surface: #fffdf7;
+  --db-text: #25271f;
+  --db-muted: #74766c;
+  --db-accent: #646b4e;
+  background: radial-gradient(ellipse at 92% 9%, rgba(220,216,198,.24), transparent 28%), var(--db-bg);
+  color: var(--db-text);
+  font-family: 'DM Sans', Arial, sans-serif;
+}
+.artifact-dashboard a { color: inherit; }
+.dashboard-header { border-bottom-color: rgba(53,54,44,.09); background: rgba(250,249,244,.92); backdrop-filter: blur(14px); }
+.dashboard-brand { font-family: 'DM Sans', Arial, sans-serif; font-size: 21px; font-weight: 700; }
+.dashboard-brand__mark { border-radius: 50%; background: #25271f; color: #f5f3ec; font-family: 'Playfair Display', Georgia, serif; font-weight: 500; }
+.dashboard-nav a { color: var(--db-muted); transition: color .2s ease; }
+.dashboard-nav a:hover,.dashboard-text-link:hover { color: var(--db-accent); }
+.dashboard-credit { color: var(--db-accent); }
+.dashboard-plans { border-color: rgba(100,107,78,.38); border-radius: 999px; color: var(--db-accent) !important; }
+.dashboard-plans:hover { background: rgba(100,107,78,.09); }
+.dashboard-profile { border: 1px solid rgba(100,107,78,.18); background: #e9e8df; color: #454c36; }
+.dashboard-eyebrow { color: var(--db-accent); font-size: 10px; font-weight: 700; }
+.dashboard-welcome {
+  position: relative;
+  border: 1px solid rgba(100,107,78,.11);
+  border-radius: 5px 92px 5px 5px;
+  background: linear-gradient(90deg, rgba(245,243,236,.97) 0%, rgba(245,243,236,.9) 54%, rgba(245,243,236,.44) 100%), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1500&q=82') center 55% / cover, #eeece3;
+}
+.dashboard-welcome h1 { font-family: 'Playfair Display', Georgia, serif; font-weight: 500; letter-spacing: -.055em; }
+.dashboard-welcome h1 em { color: var(--db-accent); font-style: italic; }
+.dashboard-welcome p { color: #696b61; font-size: 15px; }
+.dashboard-welcome__symbol { color: rgba(100,107,78,.47); font-family: 'Playfair Display', Georgia, serif; }
+.dashboard-action {
+  border-color: rgba(65,66,52,.09);
+  border-radius: 5px 44px 5px 5px;
+  background: rgba(255,253,247,.88);
+  box-shadow: 0 8px 26px rgba(49,48,39,.035);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.dashboard-action:hover { transform: translateY(-3px); box-shadow: 0 15px 33px rgba(49,48,39,.08); }
+.dashboard-action--create { background: radial-gradient(circle at 96% 4%, rgba(151,157,122,.15), transparent 43%), #fffdf7; }
+.dashboard-action--ar { border-radius: 44px 5px 5px 5px; background: radial-gradient(circle at 96% 4%, rgba(197,197,173,.22), transparent 43%), #fffdf7; }
+.dashboard-action__icon { border-radius: 17px 17px 17px 5px; background: #eeede5; color: var(--db-accent); }
+.dashboard-action h2,.dashboard-section__heading h2,.dashboard-space h2 { font-family: 'Playfair Display', Georgia, serif; font-weight: 500; letter-spacing: -.04em; }
+.dashboard-action p,.dashboard-section__heading p { color: var(--db-muted); }
+.dashboard-action__button,.dashboard-space__button { border: 1px solid #25271f; border-radius: 999px; background: #25271f; color: #fffdf7 !important; font-size: 12px; font-weight: 600; transition: background .2s ease, transform .2s ease; }
+.dashboard-action__button:hover,.dashboard-space__button:hover { transform: translateY(-1px); background: #454c36; }
+.dashboard-text-link { color: var(--db-accent) !important; }
+.dashboard-product { border-color: rgba(65,66,52,.09); border-radius: 5px 46px 5px 5px; background: #fffdf7; box-shadow: 0 8px 25px rgba(49,48,39,.045); transition: transform .25s ease, box-shadow .25s ease; }
+.dashboard-product:nth-child(2) { border-radius: 46px 5px 5px 5px; }
+.dashboard-product:nth-child(3) { border-radius: 5px 5px 46px 5px; }
+.dashboard-product:hover { transform: translateY(-4px); box-shadow: 0 16px 35px rgba(49,48,39,.1); }
+.dashboard-product__image { background: #e9e7dd; }
+.dashboard-product__image img { transition: transform .45s ease; }
+.dashboard-product:hover img { transform: scale(1.04); }
+.dashboard-product__details span { color: var(--db-muted); }
+.dashboard-product__details h3 { font-family: 'Playfair Display', Georgia, serif; font-weight: 500; }
+.dashboard-product__details a { border-color: rgba(100,107,78,.26); border-radius: 50%; color: var(--db-accent); transition: background .2s ease; }
+.dashboard-product__details a:hover { background: #eeede5; }
+.dashboard-space {
+  border: 1px solid rgba(100,107,78,.14);
+  border-radius: 5px 76px 5px 5px;
+  background: linear-gradient(105deg, rgba(238,236,227,.98), rgba(238,236,227,.78)), url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80') center 56% / cover;
+}
+.dashboard-space p { color: #696b61; }
+.dashboard-space__art { color: rgba(100,107,78,.5); font-family: 'Playfair Display', Georgia, serif; }
+.dashboard-theme-toggle,.dashboard-logout { border-color: rgba(100,107,78,.25); border-radius: 999px; color: var(--db-text); font-weight: 600; }
+.dashboard-theme-toggle:hover,.dashboard-logout:hover { border-color: var(--db-accent); background: rgba(100,107,78,.08); }
+.dashboard-theme-toggle > span:first-child { color: var(--db-accent); }
+
+/* The dashboard keeps its warm palette regardless of the app theme toggle. */
+:root[data-theme="light"] .artifact-dashboard { --db-bg: #f5f3ec; --db-surface: #fffdf7; --db-text: #25271f; --db-muted: #74766c; --db-accent: #646b4e; }
+:root[data-theme="light"] .dashboard-welcome { border-color: rgba(100,107,78,.11); background: linear-gradient(90deg, rgba(245,243,236,.97) 0%, rgba(245,243,236,.9) 54%, rgba(245,243,236,.44) 100%), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1500&q=82') center 55% / cover, #eeece3; }
+:root[data-theme="light"] .dashboard-welcome h1 { color: #25271f; }
+:root[data-theme="light"] .dashboard-welcome h1 em { color: #646b4e; }
+:root[data-theme="light"] .dashboard-welcome p { color: #696b61; }
+:root[data-theme="light"] .dashboard-welcome .dashboard-eyebrow,:root[data-theme="light"] .dashboard-welcome__symbol { color: #646b4e; }
+:root[data-theme="light"] .dashboard-theme-toggle,:root[data-theme="light"] .dashboard-logout { border-color: rgba(100,107,78,.25); color: #25271f; }
+:root[data-theme="light"] .dashboard-theme-toggle:hover,:root[data-theme="light"] .dashboard-logout:hover { background: #eeede5; }
+
+@media (max-width: 700px) {
+  .dashboard-welcome { border-radius: 5px 58px 5px 5px; background-position: center, 58% center, center; }
+  .dashboard-action--ar { border-radius: 38px 5px 5px 5px; }
+  .dashboard-space { border-radius: 5px 52px 5px 5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-action,.dashboard-product,.dashboard-product__image img,.dashboard-product__details a,.dashboard-action__button,.dashboard-space__button { transition: none; }
+}
+/*
+  ARTifact dashboard dark mode
+  Append this after the dashboard's existing stylesheet.
+  Activate with data-theme="dark" on <html> (or on .artifact-dashboard).
+*/
+
+:root[data-theme="dark"] .artifact-dashboard,
+.artifact-dashboard[data-theme="dark"] {
+  --db-bg: #1e201b;
+  --db-surface: #292b25;
+  --db-text: #f0eee5;
+  --db-muted: #aaa99d;
+  --db-accent: #aeb48a;
+  min-height: 100vh;
+  color: var(--db-text);
+  background:
+    radial-gradient(ellipse at 92% 8%, rgba(151,157,122,.12), transparent 29%),
+    #1e201b;
+}
+
+:root[data-theme="dark"] .dashboard-header,
+.artifact-dashboard[data-theme="dark"] .dashboard-header {
+  border-bottom-color: rgba(241,238,225,.09);
+  background: rgba(34,36,30,.94);
+}
+:root[data-theme="dark"] .dashboard-brand__mark,
+.artifact-dashboard[data-theme="dark"] .dashboard-brand__mark {
+  background: #e9e6d8;
+  color: #292b25;
+}
+:root[data-theme="dark"] .dashboard-nav a,
+.artifact-dashboard[data-theme="dark"] .dashboard-nav a { color: #b5b4a8; }
+:root[data-theme="dark"] .dashboard-nav a:hover,
+:root[data-theme="dark"] .dashboard-text-link:hover,
+.artifact-dashboard[data-theme="dark"] .dashboard-nav a:hover,
+.artifact-dashboard[data-theme="dark"] .dashboard-text-link:hover { color: #d4d8b8; }
+:root[data-theme="dark"] .dashboard-credit,
+.artifact-dashboard[data-theme="dark"] .dashboard-credit { color: #c1c79e; }
+:root[data-theme="dark"] .dashboard-plans,
+.artifact-dashboard[data-theme="dark"] .dashboard-plans {
+  border-color: rgba(190,197,151,.48);
+  color: #d1d5b2 !important;
+}
+:root[data-theme="dark"] .dashboard-plans:hover,
+.artifact-dashboard[data-theme="dark"] .dashboard-plans:hover { background: rgba(174,180,138,.13); }
+:root[data-theme="dark"] .dashboard-profile,
+.artifact-dashboard[data-theme="dark"] .dashboard-profile {
+  border-color: rgba(190,197,151,.22);
+  background: #45483a;
+  color: #f0eee5;
+}
+:root[data-theme="dark"] .dashboard-eyebrow,
+.artifact-dashboard[data-theme="dark"] .dashboard-eyebrow { color: #c2c79f; }
+
+:root[data-theme="dark"] .dashboard-welcome,
+.artifact-dashboard[data-theme="dark"] .dashboard-welcome {
+  border-color: rgba(190,197,151,.18);
+  background:
+    linear-gradient(90deg, rgba(31,33,28,.97) 0%, rgba(31,33,28,.86) 52%, rgba(31,33,28,.42) 100%),
+    url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1500&q=82') center 55% / cover,
+    #292b25;
+}
+:root[data-theme="dark"] .dashboard-welcome h1,
+.artifact-dashboard[data-theme="dark"] .dashboard-welcome h1 { color: #f1eee4; }
+:root[data-theme="dark"] .dashboard-welcome h1 em,
+.artifact-dashboard[data-theme="dark"] .dashboard-welcome h1 em { color: #c2c79f; }
+:root[data-theme="dark"] .dashboard-welcome p,
+.artifact-dashboard[data-theme="dark"] .dashboard-welcome p { color: #c2c0b4; }
+:root[data-theme="dark"] .dashboard-welcome__symbol,
+.artifact-dashboard[data-theme="dark"] .dashboard-welcome__symbol { color: rgba(194,199,159,.56); }
+
+:root[data-theme="dark"] .dashboard-action,
+.artifact-dashboard[data-theme="dark"] .dashboard-action {
+  border-color: rgba(241,238,225,.1);
+  background: #292b25;
+  box-shadow: 0 10px 28px rgba(0,0,0,.11);
+}
+:root[data-theme="dark"] .dashboard-action--create,
+.artifact-dashboard[data-theme="dark"] .dashboard-action--create {
+  background: radial-gradient(circle at 96% 4%, rgba(174,180,138,.12), transparent 43%), #292b25;
+}
+:root[data-theme="dark"] .dashboard-action--ar,
+.artifact-dashboard[data-theme="dark"] .dashboard-action--ar {
+  background: radial-gradient(circle at 96% 4%, rgba(197,191,164,.1), transparent 43%), #292b25;
+}
+:root[data-theme="dark"] .dashboard-action:hover,
+.artifact-dashboard[data-theme="dark"] .dashboard-action:hover {
+  border-color: rgba(190,197,151,.26);
+  box-shadow: 0 16px 34px rgba(0,0,0,.2);
+}
+:root[data-theme="dark"] .dashboard-action__icon,
+.artifact-dashboard[data-theme="dark"] .dashboard-action__icon {
+  background: #3a3c32;
+  color: #c2c79f;
+}
+:root[data-theme="dark"] .dashboard-action h2,
+:root[data-theme="dark"] .dashboard-section__heading h2,
+:root[data-theme="dark"] .dashboard-space h2,
+.artifact-dashboard[data-theme="dark"] .dashboard-action h2,
+.artifact-dashboard[data-theme="dark"] .dashboard-section__heading h2,
+.artifact-dashboard[data-theme="dark"] .dashboard-space h2 { color: #f0eee5; }
+:root[data-theme="dark"] .dashboard-action p,
+:root[data-theme="dark"] .dashboard-section__heading p,
+:root[data-theme="dark"] .dashboard-space p,
+.artifact-dashboard[data-theme="dark"] .dashboard-action p,
+.artifact-dashboard[data-theme="dark"] .dashboard-section__heading p,
+.artifact-dashboard[data-theme="dark"] .dashboard-space p { color: #b3b1a5; }
+:root[data-theme="dark"] .dashboard-action__button,
+:root[data-theme="dark"] .dashboard-space__button,
+.artifact-dashboard[data-theme="dark"] .dashboard-action__button,
+.artifact-dashboard[data-theme="dark"] .dashboard-space__button {
+  border-color: #d6d2c3;
+  background: #e6e2d4;
+  color: #282a23 !important;
+}
+:root[data-theme="dark"] .dashboard-action__button:hover,
+:root[data-theme="dark"] .dashboard-space__button:hover,
+.artifact-dashboard[data-theme="dark"] .dashboard-action__button:hover,
+.artifact-dashboard[data-theme="dark"] .dashboard-space__button:hover {
+  background: #c9c7ae;
+}
+:root[data-theme="dark"] .dashboard-text-link,
+.artifact-dashboard[data-theme="dark"] .dashboard-text-link { color: #c6cba5 !important; }
+
+:root[data-theme="dark"] .dashboard-product,
+.artifact-dashboard[data-theme="dark"] .dashboard-product {
+  border-color: rgba(241,238,225,.1);
+  background: #292b25;
+  box-shadow: 0 10px 28px rgba(0,0,0,.12);
+}
+:root[data-theme="dark"] .dashboard-product:hover,
+.artifact-dashboard[data-theme="dark"] .dashboard-product:hover { box-shadow: 0 16px 35px rgba(0,0,0,.22); }
+:root[data-theme="dark"] .dashboard-product__image,
+.artifact-dashboard[data-theme="dark"] .dashboard-product__image { background: #34362f; }
+:root[data-theme="dark"] .dashboard-product__details span,
+.artifact-dashboard[data-theme="dark"] .dashboard-product__details span { color: #aaa99d; }
+:root[data-theme="dark"] .dashboard-product__details h3,
+.artifact-dashboard[data-theme="dark"] .dashboard-product__details h3 { color: #f0eee5; }
+:root[data-theme="dark"] .dashboard-product__details a,
+.artifact-dashboard[data-theme="dark"] .dashboard-product__details a {
+  border-color: rgba(190,197,151,.35);
+  color: #c6cba5;
+}
+:root[data-theme="dark"] .dashboard-product__details a:hover,
+.artifact-dashboard[data-theme="dark"] .dashboard-product__details a:hover { background: #3a3c32; }
+:root[data-theme="dark"] .dashboard-product__image--failed::after,
+.artifact-dashboard[data-theme="dark"] .dashboard-product__image--failed::after { color: #b5b4a8; }
+
+:root[data-theme="dark"] .dashboard-space,
+.artifact-dashboard[data-theme="dark"] .dashboard-space {
+  border-color: rgba(190,197,151,.2);
+  background:
+    linear-gradient(105deg, rgba(34,36,30,.97), rgba(34,36,30,.76)),
+    url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80') center 56% / cover,
+    #292b25;
+}
+:root[data-theme="dark"] .dashboard-space__art,
+.artifact-dashboard[data-theme="dark"] .dashboard-space__art { color: rgba(194,199,159,.5); }
+
+:root[data-theme="dark"] .dashboard-theme-toggle,
+:root[data-theme="dark"] .dashboard-logout,
+.artifact-dashboard[data-theme="dark"] .dashboard-theme-toggle,
+.artifact-dashboard[data-theme="dark"] .dashboard-logout {
+  border-color: rgba(190,197,151,.3);
+  color: #ece9df;
+}
+:root[data-theme="dark"] .dashboard-theme-toggle:hover,
+:root[data-theme="dark"] .dashboard-logout:hover,
+.artifact-dashboard[data-theme="dark"] .dashboard-theme-toggle:hover,
+.artifact-dashboard[data-theme="dark"] .dashboard-logout:hover {
+  border-color: #b8be92;
+  background: rgba(174,180,138,.12);
+}
+:root[data-theme="dark"] .dashboard-theme-toggle > span:first-child,
+.artifact-dashboard[data-theme="dark"] .dashboard-theme-toggle > span:first-child { color: #c2c79f; }
+
+@media (max-width: 700px) {
+  :root[data-theme="dark"] .dashboard-welcome,
+  .artifact-dashboard[data-theme="dark"] .dashboard-welcome {
+    background-position: center, 58% center, center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="dark"] .dashboard-action,
+  :root[data-theme="dark"] .dashboard-product,
+  :root[data-theme="dark"] .dashboard-product__image img,
+  :root[data-theme="dark"] .dashboard-action__button,
+  :root[data-theme="dark"] .dashboard-space__button,
+  .artifact-dashboard[data-theme="dark"] .dashboard-action,
+  .artifact-dashboard[data-theme="dark"] .dashboard-product,
+  .artifact-dashboard[data-theme="dark"] .dashboard-product__image img,
+  .artifact-dashboard[data-theme="dark"] .dashboard-action__button,
+  .artifact-dashboard[data-theme="dark"] .dashboard-space__button { transition: none; }
+}
+/*
+  ARTifact dashboard responsive overrides.
+  Append after ArtifactDashboard.css and ArtifactDashboard.dark.css.
+  These rules work with both the light and dark theme.
+*/
+
+/* Laptop / compact desktop */
+@media (max-width: 1180px) {
+  .dashboard-content { width: min(100% - 56px, 1080px); }
+  .dashboard-header { padding-right: 28px; padding-left: 28px; }
+  .dashboard-nav { gap: 20px; }
+  .dashboard-content { padding-top: 38px; }
+  .dashboard-welcome { min-height: 245px; padding: 40px; }
+  .dashboard-actions,.dashboard-catalog { gap: 16px; }
+  .dashboard-action { min-height: 315px; padding: 29px; }
+  .dashboard-product__image { height: 205px; }
+  .dashboard-space { min-height: 250px; padding: 34px; }
+}
+
+/* Tablet landscape / portrait */
+@media (max-width: 980px) {
+  .dashboard-content { width: calc(100% - 48px); padding-top: 34px; }
+  .dashboard-header { min-height: 74px; padding-right: 24px; padding-left: 24px; }
+  .dashboard-header__actions { gap: 10px; }
+  .dashboard-nav { display: none; }
+  .dashboard-credit { display: none; }
+  .dashboard-welcome { min-height: 235px; padding: 36px; }
+  .dashboard-welcome__symbol { display: none; }
+  .dashboard-actions { gap: 14px; }
+  .dashboard-action { min-height: 300px; padding: 26px; }
+  .dashboard-catalog { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .dashboard-product__image { height: clamp(190px, 28vw, 260px); }
+  .dashboard-section { margin-top: 64px; }
+  .dashboard-space { min-height: 235px; margin-top: 64px; padding: 32px; }
+  .dashboard-space__art { margin-right: 10px; font-size: 140px; }
+}
+
+/* Tablet portrait / large phone */
+@media (max-width: 760px) {
+  .dashboard-header { min-height: 68px; padding: 11px 20px; }
+  .dashboard-brand { font-size: 18px; }
+  .dashboard-brand__mark { width: 33px; height: 33px; font-size: 20px; }
+  .dashboard-header__actions { gap: 8px; }
+  .dashboard-theme-toggle,.dashboard-logout { min-height: 36px; padding-right: 10px; padding-left: 10px; font-size: 11px; }
+  .dashboard-plans { padding: 8px 12px; font-size: 11px; }
+  .dashboard-profile { width: 34px; height: 34px; }
+  .dashboard-content { width: calc(100% - 40px); padding: 28px 0 64px; }
+  .dashboard-welcome { min-height: 220px; padding: 30px; border-radius: 5px 56px 5px 5px; background-position: center, 58% center, center; }
+  .dashboard-welcome h1 { margin: 12px 0; font-size: clamp(36px, 7vw, 52px); }
+  .dashboard-welcome p { max-width: 500px; font-size: 13px; }
+  .dashboard-actions { grid-template-columns: 1fr; gap: 13px; margin-top: 18px; }
+  .dashboard-action,.dashboard-action--ar { min-height: 255px; padding: 25px; border-radius: 5px 38px 5px 5px; }
+  .dashboard-action__icon { margin-bottom: 17px; }
+  .dashboard-action h2 { font-size: 27px; }
+  .dashboard-action__button { margin-top: 24px; }
+  .dashboard-section { margin-top: 52px; }
+  .dashboard-section__heading { align-items: flex-start; gap: 10px; margin-bottom: 19px; }
+  .dashboard-section__heading h2,.dashboard-space h2 { font-size: clamp(29px, 5.4vw, 38px); }
+  .dashboard-section__heading p { font-size: 12px; }
+  .dashboard-space { min-height: 210px; margin-top: 52px; padding: 27px; border-radius: 5px 45px 5px 5px; }
+  .dashboard-space__art { display: none; }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .dashboard-header { align-items: center; gap: 9px; }
+  .dashboard-brand { font-size: 17px; }
+  .dashboard-header__actions { gap: 7px; }
+  .dashboard-content { width: calc(100% - 32px); padding-top: 22px; }
+  .dashboard-welcome { min-height: 218px; padding: 25px 22px; border-radius: 5px 44px 5px 5px; }
+  .dashboard-welcome h1 { max-width: 460px; font-size: clamp(35px, 8.7vw, 47px); }
+  .dashboard-welcome p { font-size: 12px; line-height: 1.7; }
+  .dashboard-actions { gap: 11px; }
+  .dashboard-action,.dashboard-action--ar { min-height: 245px; padding: 23px; }
+  .dashboard-action p { font-size: 12px; }
+  .dashboard-section { margin-top: 46px; }
+  .dashboard-section__heading { flex-direction: column; }
+  .dashboard-section__heading h2 { margin-top: 8px; }
+  .dashboard-catalog { grid-template-columns: 1fr; gap: 14px; }
+  .dashboard-product,.dashboard-product:nth-child(2),.dashboard-product:nth-child(3) { border-radius: 5px 38px 5px 5px; }
+  .dashboard-product__image { height: clamp(210px, 62vw, 320px); }
+  .dashboard-product__details { padding: 16px; }
+  .dashboard-space { min-height: 0; margin-top: 46px; padding: 25px 22px; }
+  .dashboard-space p { font-size: 12px; }
+  .dashboard-space__button { margin-top: 3px; }
+}
+
+/* Narrow phones and constrained embedded viewports */
+@media (max-width: 420px) {
+  .dashboard-header { flex-wrap: wrap; justify-content: space-between; padding: 10px 15px; }
+  .dashboard-brand { gap: 8px; font-size: 16px; }
+  .dashboard-brand__mark { width: 30px; height: 30px; font-size: 18px; }
+  .dashboard-header__actions { max-width: 100%; gap: 6px; }
+  .dashboard-plans { padding: 7px 10px; font-size: 10px; }
+  .dashboard-theme-toggle,.dashboard-logout { min-height: 33px; padding: 0 8px; font-size: 10px; }
+  .dashboard-profile { width: 31px; height: 31px; font-size: 11px; }
+  .dashboard-content { width: calc(100% - 28px); padding-top: 19px; padding-bottom: 48px; }
+  .dashboard-welcome { min-height: 205px; padding: 22px 18px; border-radius: 4px 35px 4px 4px; }
+  .dashboard-welcome h1 { font-size: clamp(33px, 9.5vw, 41px); }
+  .dashboard-welcome p { font-size: 11px; }
+  .dashboard-eyebrow { font-size: 9px; }
+  .dashboard-action,.dashboard-action--ar { min-height: 235px; padding: 20px; }
+  .dashboard-action h2 { font-size: 24px; }
+  .dashboard-action__button,.dashboard-space__button { min-height: 41px; padding: 0 15px; font-size: 11px; }
+  .dashboard-section__heading h2,.dashboard-space h2 { font-size: 29px; }
+  .dashboard-product__image { height: 220px; }
+  .dashboard-space { padding: 22px 19px; }
+}
+
+/* Landscape phones: avoid oversized welcome panels and preserve scroll space. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .dashboard-content { padding-top: 18px; }
+  .dashboard-welcome { min-height: 180px; padding: 22px 28px; }
+  .dashboard-welcome h1 { margin: 8px 0; font-size: clamp(32px, 6vh, 44px); }
+  .dashboard-action { min-height: 230px; }
+}
+
+/* Comfortable tap targets and no hover-only assumptions on touch devices. */
+@media (hover: none) {
+  .dashboard-action:hover,.dashboard-product:hover { transform: none; }
+  .dashboard-product:hover img { transform: none; }
+}
