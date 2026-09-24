@@ -7,20 +7,41 @@ const helmet = require("helmet");
 const axios = require("axios");
 const multer = require("multer");
 const FormData = require("form-data");
+
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
-
+const authenticate = require("./middleware/authenticate");
+const adminRoutes = require("./routes/adminRoutes");
+const profileRoutes = require("./routes/profileRoutes");
 const connectDatabase =
   require("./config/database");
 
+const {
+  storeGeneratedModel,
+} = require("./services/generatedModelStorage");
+  const {
+  signModelUrl,
+  verifyModelUrl,
+} = require("./services/modelAccessService");
+const {
+  storeUploadedImage,
+} = require("./services/uploadedImageStorage");
   const correlationId =
   require("./middleware/correlationId");
-
+const requireIdempotencyKey = require("./middleware/requireIdempotencyKey");
+const {
+  reserveGeneration,
+  markGenerationSubmitted,
+  releaseGeneration,
+  refundFailedGeneration,
+} = require("./services/generationCreditService");
   const paymentRoutes =
   require("./routes/paymentRoutes");
-
+const GenerationJob = require("./models/GenerationJob");
+const arCaptureRoutes = require("./routes/arCaptureRoutes");
 const authRoutes =
   require("./routes/authRoutes");
+  const catalogRoutes = require("./routes/catalogRoutes");
 
 const {
   getAllowedOrigins,
@@ -68,6 +89,7 @@ const corsOptions = {
     "Content-Type",
     "Authorization",
     "Idempotency-Key",
+    "X-Admin-Token",
     "X-CSRF-Protection",
   ],
   credentials: true,
@@ -127,6 +149,9 @@ app.use(
     crossOriginResourcePolicy: {
       policy: "cross-origin",
     },
+    crossOriginOpenerPolicy: {
+  policy: "same-origin-allow-popups",
+},
 
     contentSecurityPolicy:
       process.env.NODE_ENV ===
@@ -198,6 +223,11 @@ app.use(
   "/api/v1/payments",
   paymentRoutes
 );
+
+app.use("/api/v1/catalog", catalogRoutes);
+app.use("/api/v1/profile", profileRoutes);
+app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/ar-captures", arCaptureRoutes);
 // ========================================
 // HEALTH CHECK
 // ========================================
@@ -224,19 +254,20 @@ app.get("/api/health", (req, res) => {
 
 app.post(
   "/api/generate-3d",
+  authenticate,
+  requireIdempotencyKey,
   upload.single("image"),
 
   async (req, res) => {
+    let job;
+    let taskCreationAttempted = false;
+    let taskId = null;
+
     try {
       if (!process.env.TRIPO_API_KEY) {
-        console.error(
-          "TRIPO_API_KEY is missing"
-        );
-
         return res.status(503).json({
           success: false,
-          message:
-            "3D generation service is not configured",
+          message: "3D generation service is not configured",
         });
       }
 
@@ -247,14 +278,51 @@ app.post(
         });
       }
 
+      const reservation = await reserveGeneration({
+        userId: req.user._id,
+        idempotencyKey: req.idempotencyKey,
+        correlationId: req.correlationId,
+      });
+
+      job = reservation.job;
+
+      if (reservation.alreadyExists) {
+        if (job.taskId) {
+          return res.status(202).json({
+            success: true,
+            taskId: job.taskId,
+            message: "Generation already started",
+          });
+        }
+
+        return res.status(409).json({
+          success: false,
+          code: "GENERATION_ALREADY_PROCESSING",
+          message: "This generation request is already processing.",
+        });
+      }
+            const storedImage = await storeUploadedImage({
+        buffer: req.file.buffer,
+        jobId: job.id,
+      });
+
+      await GenerationJob.updateOne(
+        { _id: job._id, status: "reserved" },
+        {
+          $set: {
+            imageUrl: storedImage.imageUrl,
+            imagePublicId: storedImage.imagePublicId,
+          },
+        }
+      );
+
       const fileTypeByMime = {
         "image/jpeg": "jpg",
         "image/png": "png",
         "image/webp": "webp",
       };
 
-      const fileType =
-        fileTypeByMime[req.file.mimetype];
+      const fileType = fileTypeByMime[req.file.mimetype];
 
       // ==================================
       // UPLOAD IMAGE TO TRIPO
@@ -334,35 +402,31 @@ app.post(
         enable_image_autofix: true,
       };
 
-      const tripoTaskResponse =
-        await axios.post(
-          "https://api.tripo3d.ai/v2/openapi/task",
+          taskCreationAttempted = true;
 
-          taskPayload,
+      const tripoTaskResponse = await axios.post(
+        "https://api.tripo3d.ai/v2/openapi/task",
+        taskPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.TRIPO_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          timeout: 30000,
+        }
+      );
 
-          {
-            headers: {
-              Authorization:
-                `Bearer ${process.env.TRIPO_API_KEY}`,
-
-              "Content-Type":
-                "application/json",
-            },
-
-            timeout: 30000,
-          }
-        );
-
-      const taskId =
-        tripoTaskResponse.data
-          ?.data
-          ?.task_id;
+      taskId = tripoTaskResponse.data?.data?.task_id;
 
       if (!taskId) {
-        throw new Error(
-          "Tripo did not return a task ID"
-        );
+        throw new Error("Tripo did not return a task ID");
       }
+
+      await markGenerationSubmitted({
+        jobId: job._id,
+        taskId,
+        correlationId: req.correlationId,
+      });
 
       return res.status(202).json({
         success: true,
@@ -372,15 +436,52 @@ app.post(
     } catch (error) {
       console.error(
         "3D generation error:",
-
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
+     const tripoRejected =
+  error.response &&
+  error.response.status >= 400 &&
+  error.response.status < 500;
+
+if (job && (!taskCreationAttempted || (tripoRejected && !taskId))) {
+        try {
+          await releaseGeneration({
+            jobId: job._id,
+            reason: "Tripo upload failed",
+            correlationId: req.correlationId,
+          });
+        } catch (releaseError) {
+          console.error(
+            "Credit release failed:",
+            releaseError.message
+          );
+        }
+      }
+
+      if (error.statusCode === 402) {
+        return res.status(402).json({
+          success: false,
+          code: error.code,
+          message: error.message,
+        });
+      }
+
+      if (error.response?.data?.code === 2010) {
+  return res.status(503).json({
+    success: false,
+    code: "TRIPO_API_CREDITS_EMPTY",
+    message: "3D generation is temporarily unavailable.",
+  });
+}
       return res.status(502).json({
         success: false,
-        message:
-          "Unable to start 3D generation",
+        code: taskCreationAttempted
+          ? "GENERATION_OUTCOME_UNKNOWN"
+          : "GENERATION_START_FAILED",
+        message: taskCreationAttempted
+          ? "Could not confirm generation. Credit is reserved; contact support before retrying."
+          : "Unable to start 3D generation",
       });
     }
   }
@@ -392,6 +493,7 @@ app.post(
 
 app.get(
   "/api/task/:taskId",
+  authenticate,
 
   async (req, res) => {
     try {
@@ -414,7 +516,19 @@ app.get(
           message: "Invalid task ID",
         });
       }
+          const job = await GenerationJob.findOne({
+  taskId,
+  userId: req.user._id,
+});
 
+if (!job) {
+  return res.status(404).json({
+    success: false,
+    message: "Generation task not found",
+  });
+}
+      
+      
       const tripoResponse =
         await axios.get(
           `https://api.tripo3d.ai/v2/openapi/task/${encodeURIComponent(
@@ -441,17 +555,96 @@ app.get(
             "Task information was not returned",
         });
       }
-
-      let modelUrl = null;
-
-      if (
-        task.status === "success" &&
-        task.result?.pbr_model?.url
+            if (
+        task.status === "failed" ||
+        task.status === "cancelled"
       ) {
-        modelUrl =
-          `${req.protocol}://${req.get(
-            "host"
-          )}/api/model/${taskId}`;
+        await refundFailedGeneration({
+          taskId,
+          reason: `Tripo task ${task.status}`,
+          correlationId: req.correlationId,
+        });
+      }
+
+           let modelUrl = job.modelUrl || null;
+
+      if (task.status === "success" && !modelUrl) {
+        const sourceUrl = task.result?.pbr_model?.url;
+
+        if (!sourceUrl) {
+          return res.status(502).json({
+            success: false,
+            message: "Tripo finished but did not provide a GLB",
+          });
+        }
+
+       const claimed = await GenerationJob.findOneAndUpdate(
+  {
+    _id: job._id,
+    modelUrl: null,
+    $or: [
+      { status: "submitted" },
+      {
+        status: "storing",
+        storageStartedAt: {
+          $lt: new Date(Date.now() - 3 * 60 * 1000),
+        },
+      },
+    ],
+  },
+  {
+    $set: {
+      status: "storing",
+      storageStartedAt: new Date(),
+    },
+  },
+  { new: true }
+);
+        if (claimed) {
+          try {
+            const stored = await storeGeneratedModel({
+              sourceUrl,
+              jobId: job.id,
+            });
+
+            const completed = await GenerationJob.findByIdAndUpdate(
+              job._id,
+              {
+                $set: {
+                  status: "completed",
+                  modelUrl: stored.modelUrl,
+                  cloudinaryPublicId: stored.cloudinaryPublicId,
+                  modelBytes: stored.bytes,
+                  completedAt: new Date(),
+                },
+              },
+              { new: true }
+            );
+
+            modelUrl = completed.modelUrl;
+          } catch (storageError) {
+            await GenerationJob.updateOne(
+              { _id: job._id, status: "storing" },
+              { $set: { status: "submitted" } }
+            );
+
+            console.error(
+              "Generated model storage failed:",
+              storageError.message
+            );
+
+            return res.status(503).json({
+              success: false,
+              code: "MODEL_STORAGE_PENDING",
+              message:
+                "Model is ready but storage is temporarily unavailable. Retry shortly.",
+            });
+          }
+        } else {
+          // Another poll request is uploading it.
+          const latest = await GenerationJob.findById(job._id);
+          modelUrl = latest?.modelUrl || null;
+        }
       }
 
       return res.status(200).json({
@@ -488,6 +681,110 @@ app.get(
   }
 );
 
+app.get(
+  "/api/v1/generations/:generationId",
+  authenticate,
+  async (req, res, next) => {
+    try {
+      if (!mongoose.isValidObjectId(req.params.generationId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid model ID",
+        });
+      }
+
+      const job = await GenerationJob.findOne({
+        _id: req.params.generationId,
+        userId: req.user._id,
+        status: "completed",
+        modelUrl: { $ne: null },
+      })
+        .select(
+          "_id taskId imageUrl modelUrl modelBytes createdAt completedAt"
+        )
+        .lean();
+
+      if (!job) {
+        return res.status(404).json({
+          success: false,
+          message: "Saved model not found",
+        });
+      }
+
+      return res.json({
+        success: true,
+        data: {
+          id: String(job._id),
+          taskId: job.taskId,
+          name: "Furniture model",
+          category: "Your creation",
+          imageUrl: job.imageUrl,
+          modelUrl: job.modelUrl,
+          modelBytes: job.modelBytes,
+          createdAt: job.createdAt,
+          completedAt: job.completedAt,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+app.get(
+  "/api/v1/generations",
+  authenticate,
+
+  async (req, res, next) => {
+    try {
+      const page = Math.max(
+        1,
+        Math.min(1000, Number.parseInt(req.query.page, 10) || 1)
+      );
+
+      const limit = 20;
+
+      const filter = {
+        userId: req.user._id,
+        status: "completed",
+        modelUrl: { $ne: null },
+      };
+
+      const [jobs, total] = await Promise.all([
+        GenerationJob.find(filter)
+          .select(
+  "_id taskId imageUrl modelUrl modelBytes createdAt completedAt"
+)
+          .sort({ completedAt: -1, _id: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .lean(),
+
+        GenerationJob.countDocuments(filter),
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        data: jobs.map((job) => ({
+          id: job._id,
+          taskId: job.taskId,
+          imageUrl: job.imageUrl,
+          modelUrl: job.modelUrl,
+          modelBytes: job.modelBytes,
+          createdAt: job.createdAt,
+          completedAt: job.completedAt,
+        })),
+        pagination: {
+          page,
+          limit,
+          total,
+          hasMore: page * limit < total,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 // ========================================
 // STREAM GENERATED GLB MODEL
 // ========================================
