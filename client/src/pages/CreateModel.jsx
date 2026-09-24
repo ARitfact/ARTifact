@@ -315,8 +315,8 @@ if (!result.taskId) {
                 <strong>3D workspace</strong>
               </div>
 
-              {busy && <div style={{ padding: 20, color: "#d7ff3f" }} role="status">
-                <progress max="600" value={Math.min(elapsed, 570)} style={{ width: "100%", accentColor: "#d7ff3f" }} />
+              {busy && <div style={{ padding: 20, color: "#646b4e" }} role="status">
+                <progress max="600" value={Math.min(elapsed, 570)} style={{ width: "100%", accentColor: "#646b4e" }} />
                 <p>Generating: {Math.floor(elapsed / 60)}m {String(elapsed % 60).padStart(2, "0")}s elapsed</p>
                 <small>Approximate indicator. Actual time depends on the generation service.</small>
               </div>}
@@ -367,7 +367,7 @@ if (!result.taskId) {
             style={{
               ...styles.status,
               color:
-                status === "error" ? "#ffaaa2" : "#d7ff3f",
+                status === "error" ? "#ffaaa2" : "#646b4e",
             }}
           >
             {busy && "◌ "}
