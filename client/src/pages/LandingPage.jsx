@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import "./LandingPage.css";
+
 const steps = [
   {
     number: "01",
@@ -47,11 +48,56 @@ const features = [
   },
 ];
 
+const stats = [
+  { value: "3", label: "Steps from idea to your room" },
+  { value: "360°", label: "Views of every model" },
+  { value: "AR", label: "Preview through your camera" },
+  { value: "1", label: "Free image-to-3D generation" },
+];
+
+const categories = [
+  { icon: "◈", title: "Sofas", description: "Lounge, sit, stay a while." },
+  { icon: "◇", title: "Chairs", description: "Dining, accent and desk." },
+  { icon: "▭", title: "Tables", description: "Coffee, dining and side." },
+  { icon: "▬", title: "Beds", description: "Frames made for rest." },
+  { icon: "✳", title: "Lighting", description: "Set the mood of a room." },
+  { icon: "▦", title: "Storage", description: "Shelves, cabinets and more." },
+];
+
+const showcasePoints = [
+  { title: "Upload a furniture image", note: "Step 1" },
+  { title: "Generate your 3D model", note: "Step 2" },
+  { title: "Explore it from every angle", note: "Step 3" },
+  { title: "Place it in your room with AR", note: "Step 4" },
+];
+
+const faqs = [
+  {
+    question: "What is ARTifact?",
+    answer:
+      "ARTifact brings furniture discovery, 3D creation, and augmented reality together, so you can explore your ideas before they become part of your home.",
+  },
+  {
+    question: "How does image to 3D work?",
+    answer:
+      "Upload a furniture image and ARTifact turns it into a 3D model you can explore from every angle.",
+  },
+  {
+    question: "How does the AR preview work?",
+    answer:
+      "Place furniture in your room through your camera and see how it looks in your space before making a decision.",
+  },
+  {
+    question: "Is it free to start?",
+    answer:
+      "Yes. Your first image-to-3D generation is free. Create an account to get started.",
+  },
+];
+
 export default function LandingPage() {
   const { loading, isAuthenticated } = useContext(AuthContext);
 
   return (
-    
     <main className="landing">
       <div className="landing__glow landing__glow--one" />
       <div className="landing__glow landing__glow--two" />
@@ -68,32 +114,33 @@ export default function LandingPage() {
 
         <nav className="landing-nav" aria-label="Main navigation">
           <a href="#how-it-works">How it works</a>
+          <a href="#catalog">Catalog</a>
           <a href="#features">Features</a>
           <a href="#about">About</a>
         </nav>
 
         <div className="landing-header__actions">
-  {loading ? null : isAuthenticated ? (
-    <Link
-      to="/dashboard"
-      className="landing-button landing-button--small"
-    >
-      Continue imagining <span aria-hidden="true">↗</span>
-    </Link>
-  ) : (
-    <>
-      <Link to="/login" className="landing-login">
-        Log in
-      </Link>
-      <Link
-        to="/signup"
-        className="landing-button landing-button--small"
-      >
-        Sign up <span aria-hidden="true">↗</span>
-      </Link>
-    </>
-  )}
-</div>
+          {loading ? null : isAuthenticated ? (
+            <Link
+              to="/dashboard"
+              className="landing-button landing-button--small"
+            >
+              Continue imagining <span aria-hidden="true">↗</span>
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="landing-login">
+                Log in
+              </Link>
+              <Link
+                to="/signup"
+                className="landing-button landing-button--small"
+              >
+                Sign up <span aria-hidden="true">↗</span>
+              </Link>
+            </>
+          )}
+        </div>
       </header>
 
       <section className="landing-hero">
@@ -114,21 +161,21 @@ export default function LandingPage() {
             and see how every piece feels in your space with AR.
           </p>
 
-         <div className="landing-hero__actions">
-  {loading ? null : isAuthenticated ? (
-    <Link to="/dashboard" className="landing-button">
-      Continue imagining <span aria-hidden="true">↗</span>
-    </Link>
-  ) : (
-    <Link to="/signup" className="landing-button">
-      Start creating for free <span aria-hidden="true">↗</span>
-    </Link>
-  )}
+          <div className="landing-hero__actions">
+            {loading ? null : isAuthenticated ? (
+              <Link to="/dashboard" className="landing-button">
+                Continue imagining <span aria-hidden="true">↗</span>
+              </Link>
+            ) : (
+              <Link to="/signup" className="landing-button">
+                Start creating for free <span aria-hidden="true">↗</span>
+              </Link>
+            )}
 
-  <a href="#how-it-works" className="landing-outline-button">
-    See how it works <span aria-hidden="true">↓</span>
-  </a>
-</div>
+            <a href="#how-it-works" className="landing-outline-button">
+              See how it works <span aria-hidden="true">↓</span>
+            </a>
+          </div>
 
           <div className="landing-hero__note">
             <span className="landing-hero__note-icon">✦</span>
@@ -169,6 +216,15 @@ export default function LandingPage() {
         <span>EXPERIENCE IN AR</span>
       </div>
 
+      <section className="landing-stats" aria-label="ARTifact at a glance">
+        {stats.map((stat) => (
+          <div className="landing-stats__item" key={stat.label}>
+            <span className="landing-stats__value">{stat.value}</span>
+            <span className="landing-stats__label">{stat.label}</span>
+          </div>
+        ))}
+      </section>
+
       <section className="landing-section landing-process" id="how-it-works">
         <div className="landing-section__heading">
           <div>
@@ -196,6 +252,50 @@ export default function LandingPage() {
               <h3>{step.title}</h3>
               <p>{step.description}</p>
             </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="landing-section landing-catalog" id="catalog">
+        <div className="landing-section__heading">
+          <div>
+            <span className="landing-section__kicker">
+              THE CATALOG
+            </span>
+            <h2>
+              Furniture for
+              <br />
+              <em>every room.</em>
+            </h2>
+          </div>
+
+          <p>
+            Browse a curated catalog made for real spaces, then take
+            your favorites into 3D and AR.
+          </p>
+        </div>
+
+        <div className="landing-catalog__grid">
+          {categories.map((category) => (
+            <Link
+              to={isAuthenticated ? "/dashboard" : "/signup"}
+              className="landing-category"
+              key={category.title}
+            >
+              <div className="landing-category__top">
+                <span aria-hidden="true">{category.icon}</span>
+                <span
+                  className="landing-category__arrow"
+                  aria-hidden="true"
+                >
+                  ↗
+                </span>
+              </div>
+              <div>
+                <h3>{category.title}</h3>
+                <p>{category.description}</p>
+              </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -232,6 +332,67 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <section className="landing-section landing-showcase-section">
+        <div className="landing-showcase">
+          <div className="landing-showcase__content">
+            <span className="landing-section__kicker">
+              IMAGE TO 3D
+            </span>
+            <h2>
+              Turn any photo
+              <br />
+              into a <em>model.</em>
+            </h2>
+            <p>
+              Upload a furniture image and create a model you can
+              explore from every angle, then place it in your room.
+            </p>
+
+            <ul className="landing-checklist">
+              {showcasePoints.map((point) => (
+                <li key={point.title}>
+                  <span>{point.note}</span>
+                  {point.title}
+                </li>
+              ))}
+            </ul>
+
+            {loading ? null : isAuthenticated ? (
+              <Link to="/dashboard" className="landing-button">
+                Continue imagining <span aria-hidden="true">↗</span>
+              </Link>
+            ) : (
+              <Link to="/signup" className="landing-button">
+                Try your free generation <span aria-hidden="true">↗</span>
+              </Link>
+            )}
+          </div>
+
+          <div className="landing-panel" aria-hidden="true">
+            <div className="landing-panel__bar">
+              <i />
+              <i />
+              <i />
+            </div>
+            <div className="landing-panel__stage">
+              <div className="landing-panel__cube" />
+            </div>
+            <div className="landing-panel__row">
+              <span>Upload image</span>
+              <span>Done</span>
+            </div>
+            <div className="landing-panel__row">
+              <span>Generate 3D model</span>
+              <span>Done</span>
+            </div>
+            <div className="landing-panel__row">
+              <span>Preview in AR</span>
+              <span>Ready</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="landing-about" id="about">
         <div className="landing-about__mark" aria-hidden="true">
           A
@@ -254,6 +415,22 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <section className="landing-section landing-faq" id="faq">
+        <span className="landing-section__kicker">
+          QUESTIONS
+        </span>
+        <h2>Good to know.</h2>
+
+        <div className="landing-faq__list">
+          {faqs.map((faq) => (
+            <details className="landing-faq__item" key={faq.question}>
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       <section className="landing-cta">
         <span className="landing-section__kicker">
           YOUR SPACE IS WAITING
@@ -265,22 +442,22 @@ export default function LandingPage() {
         </h2>
         <p>Create your account and start with one free generation.</p>
 
-       <div className="landing-cta__actions">
-  {loading ? null : isAuthenticated ? (
-    <Link to="/dashboard" className="landing-button">
-      Continue imagining <span aria-hidden="true">↗</span>
-    </Link>
-  ) : (
-    <>
-      <Link to="/signup" className="landing-button">
-        Create your account <span aria-hidden="true">↗</span>
-      </Link>
-      <Link to="/login" className="landing-cta__login">
-        Already have an account? Log in
-      </Link>
-    </>
-  )}
-</div>
+        <div className="landing-cta__actions">
+          {loading ? null : isAuthenticated ? (
+            <Link to="/dashboard" className="landing-button">
+              Continue imagining <span aria-hidden="true">↗</span>
+            </Link>
+          ) : (
+            <>
+              <Link to="/signup" className="landing-button">
+                Create your account <span aria-hidden="true">↗</span>
+              </Link>
+              <Link to="/login" className="landing-cta__login">
+                Already have an account? Log in
+              </Link>
+            </>
+          )}
+        </div>
       </section>
 
       <footer className="landing-footer">
