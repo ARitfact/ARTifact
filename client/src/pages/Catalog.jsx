@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import ModelViewer from "../components/ModelViewer";
-import ARViewer from "../components/ARViewer";
+
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function Catalog() {
   const [catalogItems, setCatalogItems] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [showAR, setShowAR] = useState(false);
+ 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -99,14 +97,11 @@ export default function Catalog() {
                 key={item.id}
                 style={styles.card}
               >
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSelectedItem(item)
-                  }
-                  style={styles.cardButton}
-                  aria-label={`Preview ${item.name} in 3D`}
-                >
+               <Link
+  to={`/preview/catalog/${item.id}`}
+  style={styles.cardButton}
+  aria-label={`Preview ${item.name} in 3D`}
+>
                   <img
                     src={item.thumbnailUrl}
                     alt={item.name}
@@ -129,66 +124,16 @@ export default function Catalog() {
                       ↗
                     </span>
                   </div>
-                </button>
+                </Link>
               </article>
             ))}
           </div>
         )}
 
-        {selectedItem && (
-          <section
-            style={styles.preview}
-            aria-label="3D model preview"
-          >
-            <div style={styles.previewHeader}>
-              <div>
-                <span style={styles.eyebrow}>
-                  3D PREVIEW
-                </span>
-
-                <h2 style={styles.previewTitle}>
-                  {selectedItem.name}
-                </h2>
-              </div>
-
-              <div style={styles.previewActions}>
-                <button
-                  type="button"
-                  onClick={() => setShowAR(true)}
-                  style={styles.arButton}
-                >
-                  View in AR
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedItem(null);
-                    setShowAR(false);
-                  }}
-                  style={styles.closeButton}
-                  aria-label="Close 3D preview"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            <div style={styles.viewer}>
-              <ModelViewer
-                modelUrl={selectedItem.modelUrl}
-              />
-            </div>
-          </section>
-        )}
+        
       </div>
 
-      {showAR && selectedItem && (
-        <ARViewer
-          modelUrl={selectedItem.modelUrl}
-          onClose={() => setShowAR(false)}
-        />
-      )}
+      
     </main>
   );
 }
