@@ -1,0 +1,195 @@
+:root[data-theme="light"] {
+  color-scheme: light;
+  --light-bg: #f5f6ef;
+  --light-surface: #ffffff;
+  --light-text: #1c2518;
+  --light-muted: #596354;
+  --light-border: #d5ddcc;
+}
+
+:root[data-theme="light"] body {
+  background: var(--light-bg);
+  color: var(--light-text);
+}
+
+/* Dashboard */
+:root[data-theme="light"] .artifact-dashboard {
+  --db-bg: var(--light-bg);
+  --db-surface: var(--light-surface);
+  --db-text: var(--light-text);
+  --db-muted: var(--light-muted);
+  --db-accent: #608000;
+}
+
+:root[data-theme="light"] .dashboard-header,
+:root[data-theme="light"] .dashboard-action,
+:root[data-theme="light"] .dashboard-catalog-card {
+  background: #fff;
+  color: var(--light-text);
+  border-color: var(--light-border);
+}
+
+:root[data-theme="light"] .dashboard-profile {
+  background: #e5eccf;
+  color: var(--light-text);
+}
+
+/* Landing */
+:root[data-theme="light"] .landing {
+  --landing-bg: var(--light-bg);
+  --landing-surface: #fff;
+  --landing-surface-light: #edf2e8;
+  --landing-text: var(--light-text);
+  --landing-muted: var(--light-muted);
+  --landing-accent: #658200;
+}
+
+:root[data-theme="light"] .landing-cta,
+:root[data-theme="light"] .landing-strip,
+:root[data-theme="light"] .landing-step,
+:root[data-theme="light"] .landing-feature {
+  background: var(--light-surface);
+  color: var(--light-text);
+  border-color: var(--light-border);
+}
+
+/* Login, signup, verification */
+:root[data-theme="light"] .auth-page {
+  background: var(--light-bg);
+  color: var(--light-text);
+}
+
+:root[data-theme="light"] .auth-panel,
+:root[data-theme="light"] .signup-card {
+  background: #fff;
+  color: var(--light-text);
+  border-color: var(--light-border);
+  box-shadow: 0 16px 40px #1820151c;
+}
+
+:root[data-theme="light"] .auth-page input,
+:root[data-theme="light"] .auth-page select {
+  background: #fff;
+  color: var(--light-text);
+  border-color: #aab5a2;
+}
+
+:root[data-theme="light"] .auth-page p,
+:root[data-theme="light"] .auth-page label {
+  color: var(--light-text);
+}
+
+/* Payment plans */
+:root[data-theme="light"] .payment-page {
+  background: var(--light-bg);
+  color: var(--light-text);
+}
+
+:root[data-theme="light"] .payment-plan-card {
+  background: #fff;
+  color: var(--light-text);
+  border-color: var(--light-border);
+}
+
+:root[data-theme="light"]
+.payment-plan-card--featured {
+  background: #f2f7e8;
+}
+
+:root[data-theme="light"] .payment-page__back,
+:root[data-theme="light"]
+.payment-plan-card__description,
+:root[data-theme="light"]
+.payment-plan-card li {
+  color: var(--light-muted);
+}
+
+/* Pages using inline React styles */
+:root[data-theme="light"] .theme-page {
+  background: var(--light-bg) !important;
+  color: var(--light-text) !important;
+}
+
+:root[data-theme="light"]
+.theme-page > header,
+:root[data-theme="light"]
+.theme-page section,
+:root[data-theme="light"]
+.theme-page article {
+  background: var(--light-surface) !important;
+  color: var(--light-text) !important;
+  border-color: var(--light-border) !important;
+}
+
+:root[data-theme="light"]
+.theme-page h1,
+:root[data-theme="light"]
+.theme-page h2,
+:root[data-theme="light"]
+.theme-page strong {
+  color: var(--light-text);
+}
+
+:root[data-theme="light"]
+.theme-page p,
+:root[data-theme="light"]
+.theme-page small {
+  color: var(--light-muted);
+}
+
+:root[data-theme="light"]
+.theme-page input,
+:root[data-theme="light"]
+.theme-page textarea,
+:root[data-theme="light"]
+.theme-page select {
+  background: #fff;
+  color: var(--light-text);
+  border-color: #b6c4aa;
+}
+
+/* Light mode contrast fixes */
+:root[data-theme="light"] .dashboard-product,
+:root[data-theme="light"] .dashboard-space {
+  background: #fff;
+  border-color: var(--light-border);
+  color: var(--light-text);
+}
+
+:root[data-theme="light"] .dashboard-product__image {
+  background: #eef1e8;
+}
+
+:root[data-theme="light"] .dashboard-space p {
+  color: var(--light-muted);
+}
+
+:root[data-theme="light"] .auth-page input::placeholder {
+  color: #6d7967;
+  opacity: 1;
+}
+
+:root[data-theme="light"] .auth-page .auth-kicker,
+:root[data-theme="light"] .auth-page .signup-kicker,
+:root[data-theme="light"] .auth-page .hero-eyebrow {
+  color: #607f00;
+}
+
+:root[data-theme="light"] .auth-page .auth-error,
+:root[data-theme="light"] .auth-page .signup-error {
+  background: #fff0ed;
+  color: #9b2921;
+}
+
+:root[data-theme="light"] .payment-page__footer,
+:root[data-theme="light"] .payment-plan-card__kind {
+  color: var(--light-muted);
+}
+
+:root[data-theme="light"] .theme-page [role="alert"] {
+  color: #a22822 !important;
+}
+
+:root[data-theme="light"] .theme-page [role="status"] {
+  color: #405e00;
+}
