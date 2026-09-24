@@ -5,6 +5,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import ForgotPassword from "../pages/auth/ForgotPassword";
+import ModelPreview from "../pages/ModelPreview";
 import Settings from "../pages/Settings";
 import NotFound from "../pages/NotFound";
 import {
@@ -214,6 +215,14 @@ function AppRoutesContent() {
   element={
     <ProtectedRoute>
       <Catalog />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/preview/:source/:id"
+  element={
+    <ProtectedRoute>
+      <ModelPreview />
     </ProtectedRoute>
   }
 />
