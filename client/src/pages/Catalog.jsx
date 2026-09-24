@@ -141,87 +141,106 @@ export default function Catalog() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "#0b0d0a",
-    color: "#f5f5ee",
-    fontFamily: "Arial, sans-serif",
+    width: "100%",
+    overflowX: "hidden",
+    background:
+      "radial-gradient(ellipse at 92% 5%, rgba(220,216,198,.22), transparent 28%), #f5f3ec",
+    color: "#25271f",
+    fontFamily: "'DM Sans', Arial, sans-serif",
   },
 
   header: {
     minHeight: 76,
-    padding: "16px clamp(18px, 5vw, 64px)",
+    padding: "14px clamp(16px, 5vw, 64px)",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 16,
-    borderBottom: "1px solid #30352b",
+    flexWrap: "wrap",
+    gap: 12,
+    borderBottom: "1px solid rgba(53,54,44,.09)",
+    background: "rgba(250,249,244,.92)",
+    color: "#25271f",
   },
 
   backLink: {
-    color: "#d7ff3f",
+    color: "#646b4e",
     textDecoration: "none",
-    fontSize: 14,
+    fontSize: 12,
+    fontWeight: 600,
   },
 
   brand: {
-    fontSize: 22,
-    fontWeight: 800,
+    color: "#25271f",
+    fontSize: "clamp(17px, 2vw, 21px)",
+    fontWeight: 700,
+    letterSpacing: "-.045em",
   },
 
   plansLink: {
-    color: "#f5f5ee",
+    color: "#646b4e",
     textDecoration: "none",
-    fontSize: 14,
+    fontSize: 12,
+    fontWeight: 600,
   },
 
   content: {
-    width: "min(1280px, calc(100% - 36px))",
+    width: "min(1200px, calc(100% - 36px))",
     margin: "0 auto",
-    padding: "50px 0 90px",
+    padding: "clamp(28px, 5vw, 54px) 0 clamp(48px, 8vw, 88px)",
   },
 
-  intro: {
-    marginBottom: 35,
-  },
+  intro: { marginBottom: "clamp(22px, 4vw, 36px)" },
 
   eyebrow: {
-    color: "#d7ff3f",
-    fontSize: 11,
-    fontWeight: 800,
-    letterSpacing: "0.16em",
+    color: "#646b4e",
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: ".17em",
   },
 
   title: {
-    margin: "12px 0",
-    fontSize: "clamp(36px, 5vw, 64px)",
-    letterSpacing: "-0.06em",
+    margin: "11px 0",
+    color: "#25271f",
+    fontFamily: "'Playfair Display', Georgia, serif",
+    fontSize: "clamp(36px, 5.5vw, 64px)",
+    fontWeight: 500,
+    lineHeight: 1.06,
+    letterSpacing: "-.055em",
   },
 
   description: {
     maxWidth: 620,
-    color: "#a7aea0",
-    lineHeight: 1.7,
+    color: "#74766c",
+    fontSize: "clamp(12px, 1.5vw, 14px)",
+    lineHeight: 1.75,
   },
 
   empty: {
-    padding: 45,
-    border: "1px dashed #59644a",
-    borderRadius: 18,
-    background: "#171a14",
-    color: "#a7aea0",
+    padding: "clamp(22px, 4vw, 45px)",
+    border: "1px solid rgba(65,66,52,.12)",
+    borderRadius: "5px 38px 5px 5px",
+    background: "rgba(255,253,247,.88)",
+    color: "#74766c",
+    boxShadow: "0 8px 25px rgba(49,48,39,.04)",
+    lineHeight: 1.7,
   },
 
   grid: {
-  display: "grid",
-  gridTemplateColumns:
-    "repeat(auto-fill, minmax(160px, 190px))",
-  gap: 16,
-},
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 160px), 190px))",
+    justifyContent: "start",
+    gap: "clamp(10px, 2vw, 16px)",
+  },
 
   card: {
+    minWidth: 0,
     overflow: "hidden",
-    border: "1px solid #30352b",
-    borderRadius: 18,
-    background: "#171a14",
+    border: "1px solid rgba(65,66,52,.11)",
+    borderRadius: "5px 32px 5px 5px",
+    background: "#fffdf7",
+    color: "#25271f",
+    boxShadow: "0 8px 24px rgba(49,48,39,.045)",
+    transition: "transform .2s ease, box-shadow .2s ease",
   },
 
   cardButton: {
@@ -235,41 +254,50 @@ const styles = {
     cursor: "pointer",
   },
 
- thumbnail: {
-  display: "block",
-  width: "100%",
-  aspectRatio: "1 / 1",
-  objectFit: "cover",
-  background: "#272c22",
-},
+  thumbnail: {
+    display: "block",
+    width: "100%",
+    aspectRatio: "1 / 1",
+    objectFit: "cover",
+    background: "#eeece3",
+  },
+
   cardDetails: {
+    minWidth: 0,
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
-    padding: 18,
+    gap: 10,
+    padding: "clamp(11px, 2vw, 17px)",
   },
 
   category: {
-    color: "#a7aea0",
+    color: "#74766c",
+    fontSize: 10,
   },
 
   itemName: {
-    margin: "6px 0 0",
-    fontSize: 19,
+    margin: "5px 0 0",
+    color: "#25271f",
+    fontFamily: "'Playfair Display', Georgia, serif",
+    fontSize: "clamp(15px, 2vw, 18px)",
+    fontWeight: 500,
+    overflowWrap: "anywhere",
   },
 
   arrow: {
-    color: "#d7ff3f",
-    fontSize: 24,
+    flex: "0 0 auto",
+    color: "#646b4e",
+    fontSize: 20,
   },
 
   preview: {
-    marginTop: 48,
+    marginTop: "clamp(30px, 5vw, 48px)",
     overflow: "hidden",
-    border: "1px solid #394131",
-    borderRadius: 20,
-    background: "#171a14",
+    border: "1px solid rgba(65,66,52,.12)",
+    borderRadius: "5px 42px 5px 5px",
+    background: "#fffdf7",
+    boxShadow: "0 10px 30px rgba(49,48,39,.05)",
   },
 
   previewHeader: {
@@ -277,40 +305,54 @@ const styles = {
     flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 16,
-    padding: 20,
+    gap: 12,
+    padding: "clamp(14px, 3vw, 20px)",
   },
 
   previewTitle: {
-    margin: "6px 0 0",
+    margin: "5px 0 0",
+    color: "#25271f",
+    fontFamily: "'Playfair Display', Georgia, serif",
+    fontSize: "clamp(20px, 3vw, 27px)",
+    fontWeight: 500,
   },
 
   previewActions: {
     display: "flex",
-    gap: 10,
+    flexWrap: "wrap",
+    gap: 8,
   },
 
   arButton: {
-    padding: "11px 17px",
-    border: 0,
-    borderRadius: 9,
-    background: "#d7ff3f",
-    color: "#171b0b",
-    fontWeight: 800,
+    minHeight: 40,
+    padding: "9px 15px",
+    border: "1px solid #25271f",
+    borderRadius: 999,
+    background: "#25271f",
+    color: "#fffdf7",
+    fontSize: 11,
+    fontWeight: 600,
     cursor: "pointer",
   },
 
   closeButton: {
-    padding: "10px 14px",
-    border: "1px solid #555c4b",
-    borderRadius: 9,
-    background: "#262b21",
-    color: "white",
+    minHeight: 40,
+    padding: "8px 14px",
+    border: "1px solid rgba(100,107,78,.25)",
+    borderRadius: 999,
+    background: "transparent",
+    color: "#454c36",
+    fontSize: 11,
+    fontWeight: 600,
     cursor: "pointer",
   },
 
   viewer: {
+    width: "100%",
     height: "min(70vh, 650px)",
-    minHeight: 550,
+    minHeight: "clamp(300px, 55vh, 550px)",
+    background: "#eeece3",
   },
 };
+
+
