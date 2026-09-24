@@ -55,10 +55,9 @@ const userSchema = new mongoose.Schema(
     },
 
     googleId: {
-      type: String,
-      default: null,
-      select: false,
-    },
+  type: String,
+  select: false,
+},
 
     // =====================================
     // EMAIL VERIFICATION
