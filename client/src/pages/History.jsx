@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { apiRequest } from "../services/api";
-import ModelViewer from "../components/ModelViewer";
-import ARViewer from "../components/ARViewer";
+
 import "./History.css";
 
 export default function History() {
@@ -14,8 +13,7 @@ const [arHasMore, setArHasMore] = useState(false);
 const [arLoading, setArLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [showAR, setShowAR] = useState(false);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -167,15 +165,11 @@ const [arLoading, setArLoading] = useState(true);
           ) : (
             <div className="history-grid">
               {models.map((model) => (
-                <button
-                  className="history-card"
-                  key={model.id}
-                  type="button"
-                  onClick={() => {
-                    setSelected(model);
-                    setShowAR(false);
-                  }}
-                >
+              <Link
+  className="history-card"
+  key={model.id}
+  to={`/preview/history/${model.id}`}
+>
                   <div className="history-card-image">
                     {model.imageUrl ? (
                       <img
@@ -197,7 +191,7 @@ const [arLoading, setArLoading] = useState(true);
                     </div>
                     <span className="history-card-arrow">↗</span>
                   </div>
-                </button>
+                </Link>
               ))}
             </div>
           )}
@@ -278,48 +272,10 @@ const [arLoading, setArLoading] = useState(true);
           )}
         </section>
 
-        {selected && (
-          <section className="history-preview">
-            <div className="history-section-heading">
-              <div>
-                <span className="history-eyebrow">YOUR MODEL</span>
-                <h2>3D preview</h2>
-              </div>
-              <button
-                type="button"
-                className="history-close"
-                onClick={() => {
-                  setSelected(null);
-                  setShowAR(false);
-                }}
-              >
-                Close ×
-              </button>
-            </div>
-
-            <div className="history-viewer">
-              <ModelViewer modelUrl={selected.modelUrl} />
-            </div>
-
-            <div className="history-preview-actions">
-              <button type="button" onClick={() => setShowAR(true)}>
-                View in AR ↗
-              </button>
-              <a href={selected.modelUrl} download>
-                Download GLB ↓
-              </a>
-            </div>
-          </section>
-        )}
+        
       </div>
 
-      {showAR && selected && (
-        <ARViewer
-          modelUrl={selected.modelUrl}
-          taskId={selected.taskId}
-          onClose={() => setShowAR(false)}
-        />
-      )}
+     
     </main>
   );
 }
