@@ -1,0 +1,22 @@
+:root {
+  --artifact-bg: #080808;
+  --artifact-surface: #111111;
+  --artifact-surface-2: #171717;
+
+  --artifact-text: #f4f1e8;
+  --artifact-muted: #989898;
+
+  --artifact-accent: #d7ff3f;
+  --artifact-accent-dark: #b9df22;
+
+  --artifact-border: rgba(255, 255, 255, 0.1);
+
+  --artifact-danger: #ff5d5d;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --transition-fast: 180ms ease;
+  --transition-normal: 280ms ease;
+}
