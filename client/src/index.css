@@ -564,3 +564,42 @@ button {
   pointer-events: auto;
   cursor: pointer;
 }
+.artifact-not-found {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+  text-align: center;
+  background: #171d13;
+  color: #f6f8ee;
+}
+
+.artifact-not-found__code {
+  color: #d7ff3f;
+  letter-spacing: 0.12em;
+  font-size: clamp(5rem, 17vw, 12rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.artifact-not-found h1 {
+  margin: 20px 0 8px;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.artifact-not-found p {
+  color: #c2cbb8;
+}
+
+.artifact-not-found a {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 14px 22px;
+  border-radius: 12px;
+  background: #d7ff3f;
+  color: #17200b;
+  text-decoration: none;
+  font-weight: 800;
+}
