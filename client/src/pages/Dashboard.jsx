@@ -53,6 +53,9 @@ function toggleTheme() {
           <a href="#catalog">Catalog</a>
           <a href="#your-space">Your space</a>
           <Link to="/history">History</Link>
+           {user?.role === "admin" && (
+    <Link to="/admin">Admin</Link>
+  )}
         </nav>
 
         <div className="dashboard-header__actions">
