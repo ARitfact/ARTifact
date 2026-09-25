@@ -135,12 +135,11 @@ app.use(correlationId);
  * correct client IP and HTTPS detection.
  */
 if (
-  process.env.NODE_ENV ===
-  "production"
+  process.env.RENDER === "true" ||
+  process.env.NODE_ENV === "production"
 ) {
   app.set("trust proxy", 1);
 }
-
 /*
  * Secure HTTP response headers.
  */
