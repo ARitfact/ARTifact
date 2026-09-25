@@ -8,6 +8,7 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import ModelPreview from "../pages/ModelPreview";
 import Settings from "../pages/Settings";
 import NotFound from "../pages/NotFound";
+import AdminCatalog from "../pages/AdminCatalog";
 import {
   useContext,
   useState,
@@ -251,6 +252,14 @@ function AppRoutesContent() {
         }
       />
 
+<Route
+  path="/admin"
+  element={
+    <ProtectedRoute>
+      <AdminCatalog />
+    </ProtectedRoute>
+  }
+/>
       {/* ============================= */}
       {/* FALLBACK ROUTE                */}
       {/* ============================= */}
