@@ -1,753 +1,261 @@
-# ARTifact
-
-### AI-Powered 3D & Augmented Reality Platform
-
-ARTifact is a full-stack AI-powered platform that transforms 2D images of real-world objects into interactive 3D models and enables users to visualize those models in Augmented Reality.
-
-The platform is designed to simplify 3D creation and visualization without requiring professional 3D modeling skills.
-
----
-
-## 🌐 Live Demo
-
-🚀 **Live Application:**  
-https://ar-tifact-eight.vercel.app/
-
----
-
-## 🎯 Project Overview
-
-Traditional 3D modeling requires specialized software, technical knowledge, and considerable time.
-
-ARTifact aims to solve this problem by providing a simple workflow:
-
-```text
-        Upload Image
-             ↓
-      AI Image Processing
-             ↓
-       3D Model Generation
-             ↓
-      Interactive 3D Viewer
-             ↓
-       Augmented Reality
-
-
-
-Users can upload an image of an object, generate a 3D model using AI, view the model interactively, and access previously generated models through their personal history.
-
-✨ Features
-🤖 AI-Powered 3D Generation
-Convert 2D images into 3D models
-AI-powered image-to-3D generation
-Automated model processing
-PBR and texture support
-GLB model output
-🧊 Interactive 3D Viewer
-Interactive 3D model visualization
-Rotate the model
-Zoom in/out
-Inspect generated models
-Web-based 3D viewing
-📱 Augmented Reality
-View generated models in AR
-Place supported 3D objects in the real environment
-Real-world visualization using the device camera
-👤 User Accounts
-
-Planned authentication system includes:
-
-User registration
-Login
-Secure password hashing
-JWT authentication
-Google OAuth login
-Email verification
-Password reset
-User profiles
-🗂️ Model History
-
-Each user will have a personal model library.
-
-Users will be able to:
-
-View previously generated models
-Access model history
-Download models
-View model creation dates
-Manage their generated models
-☁️ Cloud Storage
-
-Generated models and assets will be stored using cloud object storage.
-
-This allows users to access their models without depending on the local machine.
-
-📥 Model Download
-
-Users can download generated 3D models in supported formats.
-
-🏗️ System Architecture
-                         ARTifact
-                            │
-                            ↓
-                    ┌───────────────┐
-                    │ React + Vite  │
-                    │   Frontend    │
-                    └───────┬───────┘
-                            │
-                            │ HTTPS / REST API
-                            ↓
-                    ┌───────────────┐
-                    │ Node.js       │
-                    │ Express.js    │
-                    │ Backend       │
-                    └───────┬───────┘
-                            │
-          ┌─────────────────┼─────────────────┐
-          │                 │                 │
-          ↓                 ↓                 ↓
-   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-   │ PostgreSQL   │  │ Cloud Storage│  │  Tripo3D     │
-   │ Database     │  │              │  │  AI API      │
-   │              │  │ Images       │  │              │
-   │ Users        │  │ GLB Models   │  │ Image → 3D   │
-   │ Profiles     │  │ Thumbnails   │  │ Generation   │
-   │ Models       │  │              │  │              │
-   │ History      │  │              │  │              │
-   └──────────────┘  └──────────────┘  └──────────────┘
-          │
-          ↓
-   ┌────────────────────┐
-   │ Authentication     │
-   │                    │
-   │ JWT                │
-   │ Google OAuth       │
-   │ bcrypt             │
-   │ Email Verification │
-   └────────────────────┘
-🛠️ Technology Stack
-Frontend
-React.js
-Vite
-JavaScript
-HTML5
-CSS3
-Model Viewer
-Responsive Web Design
-Backend
-Node.js
-Express.js
-REST API
-Axios
-Multer
-FormData
-dotenv
-CORS
-Database
-PostgreSQL
-Neon PostgreSQL
-Authentication
-JWT
-bcrypt
-Google OAuth 2.0
-Email verification
-Cloud Storage
-Cloudflare R2
-AI / 3D
-Tripo3D API
-GLB
-glTF
-PBR Materials
-Web-based 3D visualization
-Deployment
-Vercel
-Render
-Neon
-Cloudflare R2
-Version Control
-Git
-GitHub
-GitHub Organization
-🔄 Application Workflow
-┌────────────────────┐
-│     User Uploads   │
-│       Image        │
-└─────────┬──────────┘
-          │
-          ↓
-┌────────────────────┐
-│    React Frontend  │
-└─────────┬──────────┘
-          │
-          ↓
-┌────────────────────┐
-│   Express Backend  │
-└─────────┬──────────┘
-          │
-          ↓
-┌────────────────────┐
-│     Tripo3D API    │
-│                    │
-│    Image → 3D      │
-└─────────┬──────────┘
-          │
-          ↓
-┌────────────────────┐
-│    GLB 3D Model    │
-└─────────┬──────────┘
-          │
-          ↓
-┌────────────────────┐
-│   Cloud Storage    │
-└─────────┬──────────┘
-          │
-          ↓
-┌────────────────────┐
-│   PostgreSQL DB    │
-│                    │
-│ User + Model Data  │
-└─────────┬──────────┘
-          │
-          ↓
-┌────────────────────┐
-│   3D Web Viewer    │
-└─────────┬──────────┘
-          │
-          ↓
-┌────────────────────┐
-│ Augmented Reality  │
-└────────────────────┘
-👤 User System
-
-ARTifact is being designed around individual user accounts.
-
-Each user will have their own profile and model library.
-
-User
- │
- ├── Profile
- │
- ├── Generated Models
- │      │
- │      ├── Model 1
- │      ├── Model 2
- │      └── Model 3
- │
- └── Generation History
-🔐 Authentication Architecture
-
-ARTifact will support multiple authentication methods.
-
-Email & Password
-Register
-   ↓
-Validate Email
-   ↓
-Hash Password
-   ↓
-Store User
-   ↓
-Send Verification Email
-   ↓
-Verify Email
-   ↓
-Login
-   ↓
-JWT
-   ↓
-Authenticated User
-Google Authentication
-Continue with Google
-        ↓
-Google OAuth 2.0
-        ↓
-ARTifact Backend
-        ↓
-Find / Create User
-        ↓
-JWT Authentication
-        ↓
-User Dashboard
-🗃️ Database Design
-
-The database will maintain relationships between users and their generated models.
-
-Users
-users
- ├── id
- ├── name
- ├── email
- ├── password_hash
- ├── google_id
- ├── profile_image
- ├── email_verified
- ├── created_at
- └── updated_at
-Models
-models
- ├── id
- ├── user_id
- ├── name
- ├── task_id
- ├── model_url
- ├── thumbnail_url
- ├── created_at
- └── updated_at
-Relationship
-User
-  │
-  │ 1
-  │
-  │
-  │ *
-  ↓
-Models
-
-One user can have multiple generated models.
-
-☁️ Cloud Storage Architecture
-
-3D models can be significantly larger than normal database records.
-
-Therefore, actual model files should not be stored directly inside the database.
-
-Instead:
-
-PostgreSQL
-     │
-     └── Stores metadata
-            │
-            ├── Model ID
-            ├── User ID
-            ├── Model Name
-            └── Model URL
-
-Cloud Storage
-     │
-     └── Stores actual files
-            │
-            ├── .glb
-            ├── Images
-            └── Thumbnails
-📱 Augmented Reality
-
-ARTifact aims to allow users to visualize generated 3D objects in their real environment.
-
-Generated 3D Model
-        ↓
-     AR Viewer
-        ↓
-Device Camera
-        ↓
-Real Environment
-        ↓
-Virtual Object
-
-This can be particularly useful for:
-
-Furniture visualization
-Interior design
-Product visualization
-Object placement
-Concept visualization
-🏠 Interior Design Use Case
-
-One of ARTifact's major potential applications is interior design.
-
-For example:
-
-Take Picture
-     ↓
-Furniture Image
-     ↓
-AI 3D Generation
-     ↓
-3D Furniture Model
-     ↓
-AR Placement
-     ↓
-Visualize Inside Room
-
-Users could eventually preview furniture and other objects in their own environment before purchasing or designing them.
-
-📂 Project Structure
-ARTifact/
-│
-├── frontend/
-│   │
-│   ├── public/
-│   │
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── assets/
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   └── index.css
-│   │
-│   ├── package.json
-│   └── vite.config.js
-│
-├── backend/
-│   │
-│   ├── routes/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── services/
-│   ├── server.js
-│   └── package.json
-│
-├── .gitignore
-├── README.md
-└── package.json
-⚙️ Installation
-Prerequisites
-
-Make sure the following are installed:
-
-Node.js
-npm
-Git
-Clone Repository
-git clone https://github.com/YOUR-ORGANIZATION/ARTifact.git
-
-Move into the project:
-
-cd ARTifact
-💻 Frontend Setup
-
-Navigate to the frontend:
-
-cd frontend
-
-Install dependencies:
-
-npm install
-
-Start development server:
-
-npm run dev
-🖥️ Backend Setup
-
-Open another terminal.
-
-Navigate to backend:
-
-cd backend
-
-Install dependencies:
-
-npm install
-
-Start backend:
-
-npm start
-🔑 Environment Variables
-
-Create a .env file inside the backend directory.
-
-Example:
+ARTifact
 
+Turn a furniture photo into a 3D model, preview it in AR, and manage your designs in one place.
+
+ARTifact is a React and Node.js application for exploring furniture in 3D. Users can browse a curated GLB catalog or upload an image for asynchronous image-to-3D generation with Tripo. The app tracks generation jobs and credits, keeps model history, supports mobile AR previews and AR captures, and includes authentication, payment and catalog administration workflows.
+
+Snapshot scope: This README describes the code in the latest project archive shared on 24 September 2026. The archive does not contain a root or server package.json, and changes made after that archive (including the latest deployed admin UI) cannot be verified from it. Check the current repository before claiming those updates are shipped.
+
+What is implemented
+
+Area
+
+Current capability
+
+Engineering detail
+
+Accounts
+
+Registration, email OTP verification/resend, login, Google sign-in, password reset/change, session refresh, logout and logout from all devices
+
+Validated request schemas, rate limits, access tokens and refresh-cookie flow
+
+Profile
+
+Profile edits and profile image upload
+
+Authenticated profile routes and external image storage
+
+Image to 3D
+
+Upload JPEG, PNG or WebP, create a Tripo generation task, poll progress, view resulting GLB
+
+10 MB input cap, authenticated endpoints, provider failure handling
+
+Generation library
+
+Dashboard, generation status and paginated history
+
+Persistent GenerationJob documents; job reconciliation script
+
+Credits
+
+Reserve a credit when submitting generation; release/refund when appropriate
+
+Entitlements and credit ledger coordinate generation and payment state
+
+Model access
+
+Preview generated models with a Three.js viewer and AR viewer
+
+Signed model access URLs and server-side model storage/streaming
+
+Catalog
+
+Browse ready-made furniture models with thumbnails
+
+MongoDB catalog metadata and Appwrite Storage files; sample GLB bundled for development
+
+AR captures
+
+Save and list an AR capture
+
+Authenticated capture endpoints and ARCapture model
+
+Payments
+
+List plans, create Razorpay orders, verify payments
+
+Validation, signature verification, idempotency key, payment state and financial/audit ledger models
+
+Administration
+
+Admin-only catalog upload and unlock check
+
+Role gate plus separate short-lived admin token; GLB and thumbnail magic-byte validation
+
+Recent additions from a developer's perspective
+
+Durable generation pipeline. Generation requests are represented as jobs instead of existing only in React state. A reconciliation script can revisit jobs after a restart, and model storage decouples the returned GLB from the provider's temporary URL.
+
+Credit-aware generation. Credit reservation is tied to the job submission path, with recovery/refund helpers for failed work. The credit ledger provides a record of changes.
+
+Idempotent operations. Generation and order creation require an Idempotency-Key header, so repeated requests can be handled without unintentionally creating duplicate work or purchases.
+
+Payment records and verification. Razorpay checkout is connected to server-side order creation and signature verification, supported by payment orders, entitlements, webhook event and audit/financial models. Inspect the deployment before enabling live payments.
+
+More complete auth lifecycle. Email verification, Google login, password recovery, access-token refresh, session tracking and logout-all routes now sit behind dedicated validators and rate limiters.
+
+Curated asset pipeline. Admin catalog upload stores GLB and image files in Appwrite. The route requires both an admin role and a second unlock token, checks the file contents, and cleans up uploaded files if subsequent work fails.
+
+AR capture and profile flows. Authenticated capture endpoints and profile settings extend the product beyond a single generation screen.
+
+API safeguards and diagnostics. CORS allowlisting, Helmet, cookie request protection, correlation IDs, request validation and centralized error handling appear in the server.
+
+Architecture
+
+flowchart TD
+    UI["React / Vite UI"] --> API["Express API"]
+    API --> DB["MongoDB: users, sessions, jobs, orders"]
+    API --> Tripo["Tripo image-to-3D"]
+    API --> Assets["Appwrite / image and model storage"]
+    API --> Razorpay["Razorpay checkout"]
+    UI --> Viewer["Three.js / AR viewer"]
+
+Frontend: React 19, React Router, Vite, Three.js, React Three Fiber and Drei. The app includes landing, auth, dashboard, create model, history, catalog, payment plans and settings pages. An auth context and shared API service manage requests and session state.
+
+Backend: CommonJS Node.js and Express API with Mongoose/MongoDB. Routes are split between auth, profile, payments, catalog, AR captures and admin functions; generation endpoints currently live in server/index.js. Integrations include Tripo, Razorpay and Appwrite. Cloudinary support is also present for image storage.
+
+Repository map
+
+client/
+  public/              Sample chair.glb and static assets
+  src/components/       AR viewer, model viewer, progress, auth, payment UI
+  src/context/          Auth state
+  src/pages/            Landing, dashboard, generation, history, catalog, settings
+  src/routes/           Public and protected routes
+  src/services/         API, auth and checkout calls
+server/
+  config/               Database and provider configuration
+  controllers/          Authentication and payment logic
+  middleware/           Authentication, security, rate limits, validation
+  models/               Users, sessions, jobs, captures, catalog, payment data
+  routes/               Feature endpoints
+  scripts/              Generation reconciliation and catalog seed
+  services/             Storage, OTP, tokens, credits, model access, payment state
+  validators/           Auth and payment request schemas
+  index.js              Express setup and generation endpoints
+
+Core flows
+
+Create a 3D model
+
+Authenticate and select an image in Create Model.
+
+Send it as multipart form data to POST /api/generate-3d with an Idempotency-Key.
+
+The server validates the image, reserves a credit, uploads to Tripo and stores the task against a generation job.
+
+The client polls GET /api/task/:taskId. When complete, the model is stored and made available through the model access flow.
+
+View it in the model/AR viewer and find it later in GET /api/v1/generations.
+
+Provider processing is asynchronous. Generation time and output quality depend on Tripo; the app must handle pending, failed and completed jobs.
+
+Buy credits
+
+Read available plans from GET /api/v1/payments/plans.
+
+Create an order with POST /api/v1/payments/orders and an Idempotency-Key.
+
+Complete Razorpay checkout in the client.
+
+Submit the payment details to POST /api/v1/payments/verify; the backend verifies the signature and grants the corresponding entitlement.
+
+Publish a catalog model
+
+Sign in using an account whose database role is admin.
+
+Unlock the admin operation via POST /api/v1/admin/unlock using the separately configured admin password.
+
+Send model (valid GLB, at most 25 MB), thumbnail (PNG/JPEG/WebP, at most 5 MB), name, category and optional description to POST /api/v1/admin/catalog, with the returned token in X-Admin-Token.
+
+Assets are stored in Appwrite and metadata is added to the catalog. The unlock token expires after 15 minutes.
+
+Changing a user's role in MongoDB is a separate administrative operation. Do not expose database credentials or the admin password in the frontend.
+
+API map
+
+Prefix
+
+Key endpoints
+
+/api/v1/auth
+
+POST /register, /verify-email, /resend-email-otp, /login, /google, /refresh, /logout, /logout-all, /forgot-password, /reset-password, /change-password; GET /me
+
+/api/v1/profile
+
+PATCH /; POST /photo
+
+/api
+
+GET /health, /task/:taskId, /model/:taskId; POST /generate-3d
+
+/api/v1/generations
+
+GET / paginated history
+
+/api/v1/catalog
+
+GET /
+
+/api/v1/ar-captures
+
+POST /, GET /
+
+/api/v1/payments
+
+GET /plans; POST /orders, /verify
+
+/api/v1/admin
+
+POST /unlock, /catalog; GET /check
+
+Inspect the route implementations for exact body schemas and response shapes before integrating another client.
+
+Run locally
+
+Install the required Node.js version for your repository and install dependencies in the project root/server and client directories.
+
+Create a server .env with the MongoDB URI, token secrets and provider credentials; create client/.env.local for public frontend configuration.
+
+Start the backend from the project root with its configured npm start script (the current archive does not include that root manifest). Start the frontend with cd client && npm install && npm run dev.
+
+Visit the Vite URL, normally http://localhost:5173; the API defaults to port 5000.
+
+Example variable names used by the code:
+
+# server/.env or root .env according to the backend start directory
 PORT=5000
+NODE_ENV=development
+CLIENT_URLS=http://localhost:5173
+MONGODB_URI=<mongodb-connection-string>
+JWT_ACCESS_SECRET=<long-random-secret>
+JWT_REFRESH_SECRET=<long-random-secret>
+TRIPO_API_KEY=<tripo-api-key>
+APPWRITE_ENDPOINT=<appwrite-endpoint>
+APPWRITE_PROJECT_ID=<project-id>
+APPWRITE_BUCKET_ID=<bucket-id>
+APPWRITE_API_KEY=<server-only-api-key>
+RAZORPAY_KEY_ID=<key-id>
+RAZORPAY_KEY_SECRET=<server-only-secret>
+ADMIN_ACCESS_HASH=<argon2-password-hash>
 
-TRIPO_API_KEY=your_tripo_api_key
+# client/.env.local
+VITE_API_URL=http://localhost:5000
+VITE_GOOGLE_CLIENT_ID=<google-oauth-client-id>
 
-DATABASE_URL=your_postgresql_connection_string
+Additional provider and email settings are referenced in server/services/ and server/config/; configure those used by your deployment. Never commit .env files, API keys, JWT secrets or an admin password. CLIENT_URLS is a comma-separated allowlist of exact frontend origins; include the production frontend origin when deploying. Razorpay and Appwrite configuration is loaded at startup, so missing credentials may prevent the API from starting.
 
-JWT_SECRET=your_jwt_secret
+Deployment and checks
 
-GOOGLE_CLIENT_ID=your_google_client_id
+Build the client with cd client && npm run build; run npm run lint for its ESLint checks.
 
-GOOGLE_CLIENT_SECRET=your_google_client_secret
+Confirm /api/health and database connectivity after starting the server.
 
-RESEND_API_KEY=your_resend_api_key
+Exercise sign-up, OTP, Google sign-in, token refresh, generation and model retrieval against the intended origin.
 
-R2_ACCESS_KEY_ID=your_r2_access_key
+Use Razorpay test credentials and test checkout before considering live payments.
 
-R2_SECRET_ACCESS_KEY=your_r2_secret_key
+Confirm the Appwrite bucket and server key can create/read catalog assets, and ensure CORS permits the deployed frontend origin.
 
-R2_BUCKET_NAME=your_bucket_name
+Run server/scripts/reconcileGenerations.js when recovering submitted generation jobs after an interrupted process.
 
-R2_ENDPOINT=your_r2_endpoint
-⚠️ Security
+Current boundaries and roadmap
 
-Never commit secrets to GitHub.
-
-The following files should never be pushed:
-
-.env
-.env.local
-
-Add them to .gitignore:
-
-.env
-.env.local
-node_modules/
-dist/
-
-API keys, database credentials, OAuth secrets, and other private credentials must remain server-side.
-
-🌐 Deployment Architecture
-
-ARTifact is designed around a distributed cloud architecture.
-
-                    INTERNET
-                        │
-                        ↓
-               ┌─────────────────┐
-               │     Vercel      │
-               │    Frontend     │
-               └────────┬────────┘
-                        │
-                        ↓
-               ┌─────────────────┐
-               │     Render      │
-               │ Node + Express  │
-               └────────┬────────┘
-                        │
-          ┌─────────────┼─────────────┐
-          ↓             ↓             ↓
-     ┌─────────┐   ┌─────────┐   ┌─────────┐
-     │  Neon   │   │Cloudflare│   │ Tripo3D │
-     │Postgres │   │    R2    │   │   API   │
-     └─────────┘   └─────────┘   └─────────┘
-💰 Cost-Efficient Infrastructure
-
-ARTifact is designed to use free or low-cost cloud infrastructure during development.
-
-Potential infrastructure:
-
-Service	Purpose
-Vercel	Frontend hosting
-Render	Backend hosting
-Neon	PostgreSQL database
-Cloudflare R2	File storage
-Resend	Email
-Google OAuth	Authentication
-Tripo3D	AI 3D generation
-GitHub	Source control
-
-AI generation services may require credits depending on usage.
-
-🧪 Development Status
-
-ARTifact is currently under active development.
-
-Current
- React frontend
- Image upload
- Tripo3D integration
- Image-to-3D generation
- 3D model viewer
- GLB model support
- Model download
- Initial AR functionality
- Vercel deployment
- GitHub organization
-In Development
- PostgreSQL integration
- User registration
- Login system
- JWT authentication
- Email verification
- Google OAuth
- User profiles
- User dashboard
- Model history
- Cloud model storage
-🗺️ Roadmap
-Phase 1 — Core Platform
- Image upload
- AI 3D generation
- 3D viewer
- GLB download
- Initial AR support
-Phase 2 — User System
- Registration
- Login
- JWT authentication
- Email verification
- Google OAuth
- Password reset
- User profiles
-Phase 3 — Cloud Platform
- PostgreSQL database
- Cloud model storage
- User-specific model history
- Model management
- Model deletion
- Model sharing
-Phase 4 — AR & Visualization
- Improved AR placement
- Object scaling
- Object rotation
- Object dimensions
- Furniture visualization
- Room visualization
-Phase 5 — AI Features
- AI object modification
- AI-assisted interior design
- Automatic object classification
- Smart model optimization
- Multiple image reconstruction
-Phase 6 — Platform
- Public model gallery
- Model sharing
- Collaboration
- Mobile application
- Analytics
- Advanced user dashboard
-🔮 Future Vision
-
-ARTifact aims to become more than an image-to-3D converter.
-
-The long-term vision is:
-
-              REAL WORLD
-                   │
-                   ↓
-              2D IMAGE
-                   │
-                   ↓
-             AI PROCESSING
-                   │
-                   ↓
-              3D MODEL
-                   │
-          ┌────────┴────────┐
-          ↓                 ↓
-     3D Visualization      AR
-          │                 │
-          ↓                 ↓
-     Digital World     Real World
-
-The platform can eventually be expanded into applications for:
-
-🏠 Interior Design
-🛋️ Furniture Visualization
-🛍️ E-commerce
-🏭 Product Visualization
-🏗️ Architecture
-🎨 Digital Design
-📦 Product Prototyping
-🥽 AR Experiences
-🎓 Academic & Portfolio Value
-
-ARTifact combines multiple areas of modern software development:
-
-Frontend Development
-        +
-Backend Development
-        +
-REST APIs
-        +
-AI Integration
-        +
-3D Graphics
-        +
-Augmented Reality
-        +
-Authentication
-        +
-Databases
-        +
-Cloud Storage
-        +
-Cloud Deployment
-
-This makes ARTifact a full-stack project demonstrating practical experience across multiple technologies.
-
-📈 Scalability
-
-The architecture is designed so individual components can be upgraded independently.
-
-Small Scale
-    ↓
-Free Cloud Services
-    ↓
-Growing Users
-    ↓
-Scalable Database
-    ↓
-Dedicated Storage
-    ↓
-Dedicated Backend
-    ↓
-Production Infrastructure
-
-This allows ARTifact to evolve from a college project into a production-ready platform.
-
-🤝 Contributing
-
-Contributions are welcome.
-
-Steps
-Fork the repository
-Create a feature branch
-git checkout -b feature/your-feature
-Make your changes
-Commit your changes
-git add .
-git commit -m "Add: your feature"
-Push the branch
-git push origin feature/your-feature
-Create a Pull Request
-👥 Team
-ARTifact Development Team
-
-ARTifact is developed collaboratively as a full-stack AI and AR project.
+The code snapshot includes an AR viewer and capture support; automatic room scanning, exact room measurements, miniature room editing, wall recoloring, furniture recommendations, and mobile app packaging are future product ideas, not verified implementations in this snapshot. The bundled archive is missing the root/server package manifest and does not establish a passing end-to-end deployment. An admin upload route exists, but this snapshot does not include a corresponding admin upload page in the frontend. The payment data model contains webhook event support; confirm a deployed webhook route before documenting automatic webhook fulfillment.
 
 Contributors
-Add Team Member 1
-Add Team Member 2
-Add Team Member 3
-Add Team Member 4
-📸 Screenshots
 
-Add project screenshots here.
-
-Example:
-
-![ARTifact Home](screenshots/home.png)
-
-![3D Viewer](screenshots/3d-viewer.png)
-
-![AR Viewer](screenshots/ar-viewer.png)
-🌟 Why ARTifact?
-
-ARTifact focuses on making 3D creation and visualization easier.
-
-Instead of requiring users to:
-
-Learn 3D Software
-       ↓
-Create 3D Model
-       ↓
-Apply Textures
-       ↓
-Export Model
-       ↓
-Configure AR
-
-ARTifact aims to provide:
-
-Upload Image
-      ↓
-AI
-      ↓
-3D Model
-      ↓
-AR
-📜 License
-
-This project is currently developed for educational, research, and portfolio purposes.
-
-⭐ Support
-
-If you find ARTifact interesting, consider giving the repository a ⭐ on GitHub.
-
-ARTifact
-From Images to 3D. From 3D to Reality.
-
-AI × 3D × AR
+ARTifact is a student project developed collaboratively. Add contributor names, repository URL, screenshots and the chosen license after confirming them with the team.
